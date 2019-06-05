@@ -1,11 +1,14 @@
 package com.binish.parentallock;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -46,6 +49,10 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        //***Important***//
+        createFinishReceiver();
+        //***************//
 
         if(!UsefulFunctions.usageAccessCheck(this)) {
             new AlertDialog.Builder(this)
@@ -162,4 +169,19 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
     }
 
+    //*********************Finishing the activity************************//
+    private void createFinishReceiver(){
+        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                assert action != null;
+                if(action.equals("finish_activity")){
+                    MainActivity.this.finish();
+                }
+            }
+        };
+        registerReceiver(broadcastReceiver,new IntentFilter("finish_activity"));
+        
+    }//*********************Finishing the activity************************//
 }

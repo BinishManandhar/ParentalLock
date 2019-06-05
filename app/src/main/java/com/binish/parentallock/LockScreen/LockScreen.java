@@ -56,6 +56,7 @@ public class LockScreen extends AppCompatActivity {
                     if(lockInput.getText().toString().equals("password")) {
                         UsefulFunctions.changePassCheck(LockScreen.this,false,packageName);
                         finishAndRemoveTask();
+                        sendBroadcast(new Intent("finish_activity"));
                     }
                     return true;
                 }
