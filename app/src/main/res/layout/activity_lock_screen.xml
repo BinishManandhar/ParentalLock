@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/lockScreen"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LockScreen.LockScreen">
+
+    <ImageView
+        android:id="@+id/lockAppIcon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:scaleType="fitCenter"
+        android:layout_centerInParent="true"
+        android:layout_above="@+id/lockAppName"
+        android:layout_margin="10dp"
+        android:contentDescription="AppIcon" />
+    <TextView
+        android:id="@+id/lockAppName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="App Name"
+        android:layout_above="@+id/lockInput"
+        android:layout_centerInParent="true"
+        android:gravity="center"/>
+
+    <EditText
+        android:id="@+id/lockInput"
+        android:inputType="textPassword"
+        android:imeOptions="actionDone"
+        android:layout_margin="10dp"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:hint="Input Password"
+        android:textAlignment="center"
+        android:maxLines="1"
+        android:layout_centerInParent="true"/>
+
+</RelativeLayout>
