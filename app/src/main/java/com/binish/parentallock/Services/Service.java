@@ -74,12 +74,4 @@ public class Service extends android.app.Service {
         sendBroadcast(in);
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-//        Toast.makeText(this, "ParentalLock Service Destroyed", Toast.LENGTH_SHORT).show();
-//        Intent in = new Intent(this, ServiceDestroyReceiver.class);
-//        sendBroadcast(in);
-    }
-
 }

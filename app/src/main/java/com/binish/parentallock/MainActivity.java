@@ -155,6 +155,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+
     @Override
     protected void onDestroy() {
         stopService(mIntent);

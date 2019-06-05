@@ -69,6 +69,8 @@ public class LockScreen extends AppCompatActivity {
         }
     }
 
+
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
