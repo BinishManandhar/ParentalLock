@@ -25,40 +25,40 @@ public class Service extends android.app.Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 //        Toast.makeText(this, "ParentalLock Service Started", Toast.LENGTH_SHORT).show();
-        checking = new CountDownTimer(60 * 1000, 600) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                Log.i("PackageNames","Running: "+UsefulFunctions.getForegroundApp(Service.this));
+        Log.i("LockScreenLog","onStartCommand");
+        if(checking==null) {
+            checking = new CountDownTimer(60 * 1000, 600) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    Log.i("PackageNames", "Running: " + UsefulFunctions.getForegroundApp(Service.this));
 
-                if(UsefulFunctions.getForegroundApp(Service.this).equals("com.app.alexa")){
-                    PackageManager packageManager = getPackageManager();
+                    if (UsefulFunctions.checkLockUnlock(Service.this, UsefulFunctions.getForegroundApp(Service.this))) {
+                        PackageManager packageManager = getPackageManager();
 
-                    try {
-                        ApplicationInfo applicationInfo = packageManager.getApplicationInfo(UsefulFunctions.getForegroundApp(Service.this),0);
-                        String appName = (String) packageManager.getApplicationLabel(applicationInfo);
-                        Drawable appIcon = packageManager.getApplicationIcon(applicationInfo);
-                        int color = UsefulFunctions.getAppColour(Service.this,applicationInfo,UsefulFunctions.getForegroundApp(Service.this));
-                        dummy = applicationInfo.packageName;
-                        Log.i("PassValue","Value: "+UsefulFunctions.getPassValue(Service.this,"com.musixmatch.android.lyrify"));
-                        if(UsefulFunctions.getPassValue(Service.this,"com.app.alexa"))
-                            UsefulFunctions.showLockScreen(Service.this,appName,appIcon,color,applicationInfo.packageName);
+                        try {
+                            ApplicationInfo applicationInfo = packageManager.getApplicationInfo(UsefulFunctions.getForegroundApp(Service.this), 0);
+                            String appName = (String) packageManager.getApplicationLabel(applicationInfo);
+                            Drawable appIcon = packageManager.getApplicationIcon(applicationInfo);
+                            int color = UsefulFunctions.getAppColour(Service.this, applicationInfo, UsefulFunctions.getForegroundApp(Service.this));
+                            dummy = applicationInfo.packageName;
+                            if (UsefulFunctions.getPassValue(Service.this, UsefulFunctions.getForegroundApp(Service.this)))
+                                UsefulFunctions.showLockScreen(Service.this, appName, appIcon, color, applicationInfo.packageName);
 
-                    } catch (PackageManager.NameNotFoundException e) {
-                        e.printStackTrace();
+                        } catch (PackageManager.NameNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        UsefulFunctions.changePassCheck(Service.this, true, dummy);
                     }
+                    dummy = UsefulFunctions.getForegroundApp(Service.this);
                 }
-                else{
-                    UsefulFunctions.changePassCheck(Service.this,true,dummy);
+
+                @Override
+                public void onFinish() {
+                    checking.start();
                 }
-                dummy = UsefulFunctions.getForegroundApp(Service.this);
-            }
-
-            @Override
-            public void onFinish() {
-                checking.start();
-            }
-        }.start();
-
+            }.start();
+        }
         return START_STICKY;
     }
 

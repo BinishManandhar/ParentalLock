@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -53,10 +54,12 @@ public class LockScreen extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if(actionId == EditorInfo.IME_ACTION_DONE){
-                    if(lockInput.getText().toString().equals("password")) {
+                    if(lockInput.getText().toString().equals("p")) {
                         UsefulFunctions.changePassCheck(LockScreen.this,false,packageName);
                         finishAndRemoveTask();
-                        sendBroadcast(new Intent("finish_activity"));
+                        Intent intent = new Intent("finish_activity");
+                        intent.putExtra("where","lockScreen");
+                        sendBroadcast(intent);
                     }
                     return true;
                 }
@@ -65,8 +68,8 @@ public class LockScreen extends AppCompatActivity {
         });
 
         mIntent = new Intent(this,Service.class);
-        if(!UsefulFunctions.isMyServiceRunning(this,mIntent.getClass())){
-            startService(mIntent);
+        if(!UsefulFunctions.isMyServiceRunning(this,Service.class)){
+            //  startService(mIntent);
         }
     }
 
@@ -86,8 +89,8 @@ public class LockScreen extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(UsefulFunctions.isMyServiceRunning(this,mIntent.getClass())){
-            stopService(mIntent);
+        if(UsefulFunctions.isMyServiceRunning(this,Service.class)){
+            //stopService(mIntent);
         }
     }
 }

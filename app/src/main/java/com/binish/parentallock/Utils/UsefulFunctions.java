@@ -166,8 +166,12 @@ public class UsefulFunctions {
     public static boolean isMyServiceRunning(Context context,Class<?> serviceClass){
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for(ActivityManager.RunningServiceInfo serviceInfo: manager.getRunningServices(Integer.MAX_VALUE)){
-            if(serviceClass.getName().equals(serviceInfo.service.getClassName()))
+            Log.i("LockScreenLog","Service: "+serviceInfo.service.getClassName());
+
+            if(serviceClass.getName().equals(serviceInfo.service.getClassName())) {
+                Log.i("LockScreenLog","My Service: "+serviceClass.getName());
                 return true;
+            }
         }
         return false;
     }
@@ -224,7 +228,7 @@ public class UsefulFunctions {
         databaseHelper.createLockUnlockTable();
     }
 
-    private static boolean checkLockUnlock(Context context, String packageName){
+    public static boolean checkLockUnlock(Context context, String packageName){
         DatabaseHelper databaseHelper = new DatabaseHelper(context);
         return databaseHelper.checkLockUnlock(packageName);
     }

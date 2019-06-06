@@ -43,6 +43,8 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     Intent mIntent;
+    String where="main";
+    BroadcastReceiver broadcastReceiver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,8 +81,10 @@ public class MainActivity extends AppCompatActivity
 
         //Starting the service
         mIntent = new Intent(this,Service.class);
-        if(!UsefulFunctions.isMyServiceRunning(this,mIntent.getClass()))
+        if(!UsefulFunctions.isMyServiceRunning(this,Service.class)) {
+            Log.i("LockScreenLog","Starting Service");
             startService(mIntent);
+        }
         //-------------------//
 
 
@@ -165,18 +169,25 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onDestroy() {
-        stopService(mIntent);
+        try {
+            if(!where.equals("lockScreen"))
+                stopService(mIntent);
+        }catch (Exception e){
+            Log.i("MainActivityException", ""+e);
+        }
+        unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
 
     //*********************Finishing the activity************************//
     private void createFinishReceiver(){
-        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
                 assert action != null;
                 if(action.equals("finish_activity")){
+                    where = getIntent().getStringExtra("where");
                     MainActivity.this.finish();
                 }
             }

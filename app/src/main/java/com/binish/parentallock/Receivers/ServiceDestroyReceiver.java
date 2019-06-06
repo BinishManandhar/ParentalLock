@@ -10,10 +10,12 @@ import com.binish.parentallock.Services.Service;
 import com.binish.parentallock.Utils.UsefulFunctions;
 
 public class ServiceDestroyReceiver extends BroadcastReceiver {
-    String LOGTAG = "PackageNames";
+    String LOGTAG = "LockScreenLog";
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.i(LOGTAG,"Restart Command Received");
-        context.startService(new Intent(context,Service.class));
+        if(!UsefulFunctions.isMyServiceRunning(context,Service.class)) {
+            Log.i(LOGTAG,""+UsefulFunctions.isMyServiceRunning(context,Service.class));
+            context.startService(new Intent(context, Service.class));
+        }
     }
 }

@@ -77,6 +77,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return check.equals("true");
     }
 
+
     public void insertPassCheck(String packageName,boolean check){
         db = this.getWritableDatabase();
         ContentValues c = new ContentValues();
