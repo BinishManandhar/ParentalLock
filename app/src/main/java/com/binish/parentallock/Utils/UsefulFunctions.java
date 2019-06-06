@@ -23,6 +23,8 @@ import android.util.Log;
 
 import com.binish.parentallock.Database.DatabaseHelper;
 import com.binish.parentallock.LockScreen.LockScreen;
+import com.binish.parentallock.Models.LockUnlockModel;
+import com.binish.parentallock.R;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -188,6 +190,7 @@ public class UsefulFunctions {
 
     public static void appListDataFunction(Context context){
         dropTableAtFirstOpen(context);
+        createTableLockUnlock(context);
         List<ApplicationInfo> list = UsefulFunctions.getAppList(context);
 
         for (ApplicationInfo applicationInfo: list
@@ -196,8 +199,33 @@ public class UsefulFunctions {
         }
     }
 
+    public static List<LockUnlockModel> getListForRecycler(Context context, List<ApplicationInfo> appList){
+        List<LockUnlockModel> list = new ArrayList<>();
+        for (ApplicationInfo applicationInfo:appList) {
+            LockUnlockModel lockUnlockModel = new LockUnlockModel();
+            lockUnlockModel.setApplicationInfo(applicationInfo);
+            if(checkLockUnlock(context,applicationInfo.packageName))
+                lockUnlockModel.setDrawableInt(R.drawable.ic_lock_red_24dp);
+            else
+                lockUnlockModel.setDrawableInt(R.drawable.ic_lock_open_red_24dp);
+            list.add(lockUnlockModel);
+        }
+        return list;
+    }
+
     private static void dropTableAtFirstOpen(Context context){
         DatabaseHelper databaseHelper = new DatabaseHelper(context);
         databaseHelper.dropTablePassCheck();
+
+    }
+
+    private static void createTableLockUnlock(Context context){
+        DatabaseHelper databaseHelper = new DatabaseHelper(context);
+        databaseHelper.createLockUnlockTable();
+    }
+
+    private static boolean checkLockUnlock(Context context, String packageName){
+        DatabaseHelper databaseHelper = new DatabaseHelper(context);
+        return databaseHelper.checkLockUnlock(packageName);
     }
 }

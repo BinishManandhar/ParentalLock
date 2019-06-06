@@ -23,7 +23,11 @@ public class AppListFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(new AppListAdapter(getActivity(),UsefulFunctions.getAppList(getActivity())));
+        recyclerView.setAdapter(
+                new AppListAdapter(
+                        getActivity(),
+                        UsefulFunctions.getListForRecycler(getActivity(),
+                                UsefulFunctions.getAppList(getActivity()))));
         return view;
     }
 }

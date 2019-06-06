@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.binish.parentallock.Services.Service;
+import com.binish.parentallock.Utils.UsefulFunctions;
 
 public class ServiceDestroyReceiver extends BroadcastReceiver {
     String LOGTAG = "PackageNames";

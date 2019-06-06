@@ -59,7 +59,7 @@ public class Service extends android.app.Service {
             }
         }.start();
 
-        return START_REDELIVER_INTENT;
+        return START_STICKY;
     }
 
     @Override
@@ -74,4 +74,10 @@ public class Service extends android.app.Service {
         sendBroadcast(in);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Intent in = new Intent(this, ServiceDestroyReceiver.class);
+        sendBroadcast(in);
+    }
 }

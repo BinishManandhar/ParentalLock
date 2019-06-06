@@ -3,6 +3,7 @@ package com.binish.parentallock.Database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -15,6 +16,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_PASS_CHECK = "TablePassCheck";
     private static final String PASS_PACKAGE_NAME = "package_name";
     private static final String PASS_CHECK = "check_pass";
+    private static final String TABLE_LOCK_UNLOCK = "TableLockUnlock";
+    private static final String LOCK_UNLOCK_NAME = "package_name";
+    private static final String LOCK_UNLOCK_CHECK = "check_lock_unlock";
 
     Context context;
     SQLiteDatabase db;
@@ -33,9 +37,44 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(createTablePassCheck);
     }
 
+    public void createLockUnlockTable(){
+        db = this.getWritableDatabase();
+        try{
+            String createTableLockUnlock = "CREATE TABLE IF NOT EXISTS "+TABLE_LOCK_UNLOCK+ "("
+                    +LOCK_UNLOCK_NAME+" TEXT PRIMARY KEY,"
+                    +LOCK_UNLOCK_CHECK+" TEXT"+")";
+            db.execSQL(createTableLockUnlock);
+            db.close();
+        }catch (SQLException e){
+            Log.i("LockUnlockTable","Exception: "+e);
+            db.close();
+        }
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+    }
+
+    public void insertLockUnlock(String packageName,boolean check){
+        db = this.getWritableDatabase();
+        ContentValues c = new ContentValues();
+        c.put(LOCK_UNLOCK_NAME,packageName);
+        c.put(LOCK_UNLOCK_CHECK,String.valueOf(check));
+        db.replace(TABLE_LOCK_UNLOCK,null,c);
+    }
+
+    public boolean checkLockUnlock(String packageName){
+        db = this.getReadableDatabase();
+        String select = "SELECT * FROM "+TABLE_LOCK_UNLOCK+" WHERE "+PASS_PACKAGE_NAME+"='"+packageName+"'";
+        Cursor c = db.rawQuery(select,null);
+        String check = "false";
+        while(c.moveToNext()){
+            check = c.getString(c.getColumnIndex(LOCK_UNLOCK_CHECK));
+        }
+        c.close();
+        db.close();
+        return check.equals("true");
     }
 
     public void insertPassCheck(String packageName,boolean check){

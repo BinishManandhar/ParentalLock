@@ -71,6 +71,17 @@ public class LockScreen extends AppCompatActivity {
     }
 
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.finishAndRemoveTask();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        this.finishAndRemoveTask();
+    }
 
     @Override
     protected void onDestroy() {

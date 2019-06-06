@@ -182,6 +182,6 @@ public class MainActivity extends AppCompatActivity
             }
         };
         registerReceiver(broadcastReceiver,new IntentFilter("finish_activity"));
-        
+
     }//*********************Finishing the activity************************//
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
@@ -8,6 +9,7 @@
         android:id="@+id/appIcon"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:layout_weight="0"
         android:layout_margin="20dp"
         android:scaleType="fitCenter"
         android:contentDescription="App Icon" />
@@ -15,7 +17,18 @@
     <TextView
         android:id="@+id/appName"
         android:layout_margin="30dp"
+        android:layout_weight="3"
         android:layout_width="match_parent"
         android:layout_height="40dp" />
+
+    <ImageView
+        android:id="@+id/lockUnlock"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_weight="0"
+        android:scaleType="fitCenter"
+        android:layout_margin="20dp"
+        android:src="@drawable/ic_lock_open_red_24dp"
+        android:contentDescription="Lock" />
 
 </LinearLayout>
