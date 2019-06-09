@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity
         }catch (Exception e){
             Log.i("MainActivityException", ""+e);
         }
-        unregisterReceiver(broadcastReceiver);
+//        unregisterReceiver(broadcastReceiver);
         super.onDestroy();
     }
 
