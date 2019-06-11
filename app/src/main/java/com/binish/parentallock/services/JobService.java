@@ -1,6 +1,7 @@
 package com.binish.parentallock.services;
 
 import android.app.job.JobParameters;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -55,6 +56,10 @@ public class JobService extends android.app.job.JobService {
     @Override
     public boolean onStopJob(JobParameters params) {
         Log.i("LockScreenLog","onStopJob");
+        thread.interrupt();
+        jobFinished(params,false);
+        stopSelf();
+        stopService(new Intent(this,JobService.class));
         UsefulFunctions.initiateAlarm(this);
         return false;
     }

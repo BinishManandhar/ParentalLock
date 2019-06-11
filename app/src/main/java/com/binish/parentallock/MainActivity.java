@@ -16,6 +16,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -28,6 +29,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.binish.parentallock.Fragments.AppListFragment;
+import com.binish.parentallock.Fragments.ProfilesListFragment;
 import com.binish.parentallock.Policy.PolicyManager;
 import com.binish.parentallock.Utils.UsefulFunctions;
 import com.binish.parentallock.Worker.ParentalWorker;
@@ -36,6 +38,9 @@ import com.binish.parentallock.services.Service;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
+
+import static com.binish.parentallock.Utils.UsefulFunctions.JOB_ID;
+import static com.binish.parentallock.Utils.UsefulFunctions.isJobServiceOn;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -79,6 +84,7 @@ public class MainActivity extends AppCompatActivity
                         }
                     }).show();
         } else {
+            findViewById(R.id.fab).setVisibility(View.GONE);
             getSupportFragmentManager().beginTransaction().replace(R.id.fragmentAppList, new AppListFragment()).commit();
         }
 
@@ -105,11 +111,11 @@ public class MainActivity extends AppCompatActivity
 
         //Starting the service
         startService();
-        /*if(!isJobServiceOn(this))
-            startJobService();
+        if(!isJobServiceOn(this))
+            UsefulFunctions.startJobService(this);
         else {
-            cancelJobService(JOB_ID);
-        }*/
+            UsefulFunctions.cancelJobService(this,JOB_ID);
+        }
 //        initiateWorker();
         //-------------------//
 
@@ -198,8 +204,9 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
+        if (id == R.id.nav_profiles) {
+            findViewById(R.id.fab).setVisibility(View.VISIBLE);
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragmentAppList,new ProfilesListFragment()).commit();
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {

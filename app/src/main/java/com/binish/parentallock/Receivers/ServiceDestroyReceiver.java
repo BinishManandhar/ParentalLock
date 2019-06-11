@@ -17,13 +17,10 @@ public class ServiceDestroyReceiver extends BroadcastReceiver {
     public void onReceive(final Context context, Intent intent) {
         Log.i(LOGTAG, "" + UsefulFunctions.isMyServiceRunning(context, JobService.class));
         if (!UsefulFunctions.isMyServiceRunning(context, JobService.class)) {
-
-//            context.startService(new Intent(context, Service.class));
-            if (!UsefulFunctions.isJobServiceOn(context))
-                UsefulFunctions.startJobService(context);
-            else {
-                UsefulFunctions.cancelJobService(context,UsefulFunctions.JOB_ID);
-            }
+            UsefulFunctions.startJobService(context);
+        }
+        else {
+            UsefulFunctions.cancelJobService(context, UsefulFunctions.JOB_ID);
         }
     }
 }

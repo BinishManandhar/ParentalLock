@@ -21,7 +21,6 @@ import com.binish.parentallock.Utils.UsefulFunctions;
 import java.util.Objects;
 
 public class LockScreen extends AppCompatActivity {
-    Intent mIntent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,10 +63,6 @@ public class LockScreen extends AppCompatActivity {
             }
         });
 
-        mIntent = new Intent(this,Service.class);
-        if(!UsefulFunctions.isMyServiceRunning(this,Service.class)){
-            //  startService(mIntent);
-        }
     }
 
 
@@ -86,8 +81,5 @@ public class LockScreen extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(UsefulFunctions.isMyServiceRunning(this,Service.class)){
-            //stopService(mIntent);
-        }
     }
 }

@@ -37,7 +37,6 @@
              />
 
         <service android:name=".services.JobService"
-            android:process=":parentallock"
             android:enabled="true"
             android:permission="android.permission.BIND_JOB_SERVICE"/>
 
@@ -47,6 +46,13 @@
             android:exported="true"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
             android:label="ParentalServiceRestart"></receiver>
+
+        <receiver
+            android:name=".Receivers.ServiceInitiateReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
+            android:label="ParentalServiceStart"></receiver>
 
         <receiver android:name=".Receivers.ParentalLockAdminReceiver"
             android:permission="android.permission.BIND_DEVICE_ADMIN">

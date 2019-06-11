@@ -24,7 +24,9 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Process;
 import android.provider.Settings;
+import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
+import android.view.View;
 
 import com.binish.parentallock.Database.DatabaseHelper;
 import com.binish.parentallock.LockScreen.LockScreen;
@@ -258,10 +260,10 @@ public class UsefulFunctions {
 
     public static void cancelJobService(Context context,int jobID){
         JobScheduler jobScheduler;
-        JobInfo jobInfo;
         jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        jobScheduler.cancel(jobID);
-        startJobService(context);
+        jobScheduler.cancelAll();
+        if(!isJobServiceOn(context))
+            startJobService(context);
     }
 
 
@@ -281,16 +283,22 @@ public class UsefulFunctions {
     }
 
     public static void initiateAlarm(Context context){
-        final int TIME_TO_INVOKE = 60 * 1000; // try to re-start service in 5 seconds.
-        Log.i("LockScreenLog","onDestroy");
-        // get alarm manager
+        final int TIME_TO_INVOKE = 60 * 1000;
+
         Intent intent = new Intent(context, ServiceDestroyReceiver.class);
         AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent pendingIntent = PendingIntent
                 .getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         // set repeating alarm.
-        alarms.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() +
-                TIME_TO_INVOKE, TIME_TO_INVOKE, pendingIntent);
+        boolean alarmUp = (PendingIntent.getBroadcast(context, 0,
+                intent,
+                PendingIntent.FLAG_NO_CREATE) != null);
+        if(alarmUp) {
+            alarms.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() +
+                    TIME_TO_INVOKE, TIME_TO_INVOKE, pendingIntent);
+        }
     }
+
+
 }

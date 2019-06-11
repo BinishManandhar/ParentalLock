@@ -17,6 +17,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import com.binish.parentallock.Receivers.ServiceDestroyReceiver;
+import com.binish.parentallock.Receivers.ServiceInitiateReceiver;
 import com.binish.parentallock.Utils.UsefulFunctions;
 
 public class Service extends android.app.Service {
@@ -74,9 +75,7 @@ public class Service extends android.app.Service {
         };
         thread.start();
 
-
-
-        return START_REDELIVER_INTENT;
+        return START_STICKY;
     }
 
     @Override
@@ -86,14 +85,15 @@ public class Service extends android.app.Service {
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
-        Intent in = new Intent(this, ServiceDestroyReceiver.class);
-        sendBroadcast(in);
+//        UsefulFunctions.initiateAlarm(this);
+        sendBroadcast(new Intent(this,ServiceInitiateReceiver.class));
         super.onTaskRemoved(rootIntent);
     }
 
     @Override
     public void onDestroy() {
-        UsefulFunctions.initiateAlarm(this);
+//        UsefulFunctions.initiateAlarm(this);
+        sendBroadcast(new Intent(this,ServiceInitiateReceiver.class));
         super.onDestroy();
     }
 
