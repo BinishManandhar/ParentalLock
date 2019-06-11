@@ -6,9 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
@@ -16,9 +14,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.binish.parentallock.MainActivity;
 import com.binish.parentallock.R;
-import com.binish.parentallock.Services.Service;
+import com.binish.parentallock.services.Service;
 import com.binish.parentallock.Utils.UsefulFunctions;
 
 import java.util.Objects;

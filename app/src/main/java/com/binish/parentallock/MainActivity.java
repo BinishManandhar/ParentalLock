@@ -1,50 +1,51 @@
 package com.binish.parentallock;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.AlertDialog;
-import android.app.IntentService;
+import android.app.admin.DevicePolicyManager;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
-import com.binish.parentallock.Database.DatabaseHelper;
 import com.binish.parentallock.Fragments.AppListFragment;
-import com.binish.parentallock.Services.Service;
+import com.binish.parentallock.Policy.PolicyManager;
 import com.binish.parentallock.Utils.UsefulFunctions;
+import com.binish.parentallock.Worker.ParentalWorker;
+import com.binish.parentallock.services.Service;
 
-import java.util.Collections;
-import java.util.List;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     Intent mIntent;
-    String where="main";
+    String where = "main";
     BroadcastReceiver broadcastReceiver;
+    PolicyManager policyManager;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,11 +53,14 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        policyManager = new PolicyManager(this);
+
         //***Important***//
         createFinishReceiver();
         //***************//
 
-        if(!UsefulFunctions.usageAccessCheck(this)) {
+
+        if (!UsefulFunctions.usageAccessCheck(this)) {
             new AlertDialog.Builder(this)
                     .setTitle("Permission Required")
                     .setMessage("Usage Stats Permission is Required")
@@ -74,17 +78,39 @@ public class MainActivity extends AppCompatActivity
                             Toast.makeText(MainActivity.this, "Permission is required", Toast.LENGTH_LONG).show();
                         }
                     }).show();
+        } else {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragmentAppList, new AppListFragment()).commit();
         }
-        else {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragmentAppList,new AppListFragment()).commit();
+
+        if (!policyManager.isAdminActive()) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Admin access")
+                    .setMessage("Grant Admin access")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent activateDeviceAdmin = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+                            activateDeviceAdmin.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, policyManager.getAdminComponent());
+                            activateDeviceAdmin.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "Activate to let unwanted un-installation of this app");
+                            startActivityForResult(activateDeviceAdmin, PolicyManager.DPM_ACTIVATION_REQUEST_CODE);
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(MainActivity.this, "Admin Rights is required from unwanted un-installation of this app", Toast.LENGTH_LONG).show();
+                        }
+                    }).show();
         }
 
         //Starting the service
-        mIntent = new Intent(this,Service.class);
-        if(!UsefulFunctions.isMyServiceRunning(this,Service.class)) {
-            Log.i("LockScreenLog","Starting Service");
-            startService(mIntent);
-        }
+        startService();
+        /*if(!isJobServiceOn(this))
+            startJobService();
+        else {
+            cancelJobService(JOB_ID);
+        }*/
+//        initiateWorker();
         //-------------------//
 
 
@@ -120,6 +146,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (resultCode == Activity.RESULT_OK && requestCode == PolicyManager.DPM_ACTIVATION_REQUEST_CODE) {
+            Toast.makeText(this, "Admin Rights Granted", Toast.LENGTH_LONG).show();
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+            Toast.makeText(this, "Admin Rights is required from unwanted un-installation of this app", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
@@ -134,10 +170,25 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        if (id == R.id.action_uninstall) {
+            if (policyManager.isAdminActive()) {
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Uninstall")
+                        .setMessage("Are you sure you want to uninstall this app ?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                policyManager.disableAdmin();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
 
+                            }
+                        }).show();
+            }
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -167,32 +218,81 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+
     @Override
     protected void onDestroy() {
         try {
-            if(!where.equals("lockScreen"))
+            if (!where.equals("lockScreen"))
                 stopService(mIntent);
-        }catch (Exception e){
-            Log.i("MainActivityException", ""+e);
+        } catch (Exception e) {
+            Log.i("MainActivityException", "" + e);
         }
-//        unregisterReceiver(broadcastReceiver);
+//        initiateWorker();
         super.onDestroy();
     }
 
+    private void initiateWorker(){
+        /*PeriodicWorkRequest.Builder parentalWork = new PeriodicWorkRequest.Builder(ParentalWorker.class,60,TimeUnit.MILLISECONDS);
+        PeriodicWorkRequest work = parentalWork.build();*/
+        new Thread(){
+            @Override
+            public void run() {
+                OneTimeWorkRequest work =
+                        new OneTimeWorkRequest.Builder(ParentalWorker.class)
+                                .build();
+                WorkManager.getInstance().enqueueUniqueWork("ParentalCheck",ExistingWorkPolicy.REPLACE,work);
+                super.run();
+            }
+        }.start();
+    }
+
+
+
+
+    private void startService(){
+        mIntent = new Intent(this, Service.class);
+        if (!UsefulFunctions.isMyServiceRunning(this, Service.class)) {
+            Log.i("LockScreenLog", "Starting Service");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(mIntent);
+//                bindService(mIntent,connection,BIND_AUTO_CREATE);
+            }
+            else {
+                startService(mIntent);
+//                bindService(mIntent,connection,BIND_AUTO_CREATE);
+            }
+        }
+    }
+
     //*********************Finishing the activity************************//
-    private void createFinishReceiver(){
+    private void createFinishReceiver() {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
                 assert action != null;
-                if(action.equals("finish_activity")){
+                if (action.equals("finish_activity")) {
                     where = getIntent().getStringExtra("where");
                     MainActivity.this.finish();
                 }
             }
         };
-        registerReceiver(broadcastReceiver,new IntentFilter("finish_activity"));
+        registerReceiver(broadcastReceiver, new IntentFilter("finish_activity"));
 
+        //----------ScreenOff Detection---------------------------------//
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        intentFilter.addAction(Intent.ACTION_USER_PRESENT);
+
+        BroadcastReceiver broadcastReceiver1 = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if(!UsefulFunctions.getForegroundApp(context).equals("com.binish.parentallock"))
+                    MainActivity.this.finishAndRemoveTask();
+            }
+        };
+        registerReceiver(broadcastReceiver1,intentFilter);
+        //---------------------------------------------------------------//
     }//*********************Finishing the activity************************//
+
 }

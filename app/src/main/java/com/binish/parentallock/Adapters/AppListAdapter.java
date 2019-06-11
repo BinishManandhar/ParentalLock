@@ -3,8 +3,6 @@ package com.binish.parentallock.Adapters;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.binish.parentallock.Database.DatabaseHelper;
 import com.binish.parentallock.Models.LockUnlockModel;
@@ -45,26 +44,30 @@ public class AppListAdapter extends RecyclerView.Adapter<ViewHolder> {
         viewHolder.lockUnlock.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lockUnlockToggle(applicationInfo.packageName);
+                if (!applicationInfo.packageName.equals("com.binish.parentallock")) {
+                    lockUnlockToggle(applicationInfo.packageName);
 
-                if(applicationInfoList.get(viewHolder.getAdapterPosition()).getDrawableInt()==R.drawable.ic_lock_red_24dp)
-                    applicationInfoList.get(viewHolder.getAdapterPosition()).setDrawableInt(R.drawable.ic_lock_open_red_24dp);
-                else
-                    applicationInfoList.get(viewHolder.getAdapterPosition()).setDrawableInt(R.drawable.ic_lock_red_24dp);
+                    if (applicationInfoList.get(viewHolder.getAdapterPosition()).getDrawableInt() == R.drawable.ic_lock_red_24dp)
+                        applicationInfoList.get(viewHolder.getAdapterPosition()).setDrawableInt(R.drawable.ic_lock_open_green_24dp);
+                    else
+                        applicationInfoList.get(viewHolder.getAdapterPosition()).setDrawableInt(R.drawable.ic_lock_red_24dp);
 
-                notifyItemChanged(viewHolder.getAdapterPosition());
+                    notifyItemChanged(viewHolder.getAdapterPosition());
+                }
+                else {
+                    Toast.makeText(context,"Cannot lock this app",Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
 
-    private void lockUnlockToggle(String packageName){
+    private void lockUnlockToggle(String packageName) {
         DatabaseHelper databaseHelper = new DatabaseHelper(context);
-        if(databaseHelper.checkLockUnlock(packageName))
-            databaseHelper.insertLockUnlock(packageName,false);
+        if (databaseHelper.checkLockUnlock(packageName))
+            databaseHelper.insertLockUnlock(packageName, false);
         else
-            databaseHelper.insertLockUnlock(packageName,true);
+            databaseHelper.insertLockUnlock(packageName, true);
     }
-
 
 
     @Override

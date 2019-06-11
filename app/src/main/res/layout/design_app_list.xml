@@ -28,7 +28,7 @@
         android:layout_weight="0"
         android:scaleType="fitCenter"
         android:layout_margin="20dp"
-        android:src="@drawable/ic_lock_open_red_24dp"
+        android:src="@drawable/ic_lock_open_green_24dp"
         android:contentDescription="Lock" />
 
 </LinearLayout>

@@ -2,9 +2,14 @@ package com.binish.parentallock.Utils;
 
 import android.Manifest;
 import android.app.ActivityManager;
+import android.app.AlarmManager;
 import android.app.AppOpsManager;
+import android.app.PendingIntent;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -25,6 +30,8 @@ import com.binish.parentallock.Database.DatabaseHelper;
 import com.binish.parentallock.LockScreen.LockScreen;
 import com.binish.parentallock.Models.LockUnlockModel;
 import com.binish.parentallock.R;
+import com.binish.parentallock.Receivers.ServiceDestroyReceiver;
+import com.binish.parentallock.services.JobService;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -34,6 +41,10 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 public class UsefulFunctions {
+
+    public static int JOB_ID = 11;
+
+
     public static String getForegroundApp(Context context) {
         String currentApp = "NULL";
         UsageStatsManager usm = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
@@ -211,7 +222,7 @@ public class UsefulFunctions {
             if(checkLockUnlock(context,applicationInfo.packageName))
                 lockUnlockModel.setDrawableInt(R.drawable.ic_lock_red_24dp);
             else
-                lockUnlockModel.setDrawableInt(R.drawable.ic_lock_open_red_24dp);
+                lockUnlockModel.setDrawableInt(R.drawable.ic_lock_open_green_24dp);
             list.add(lockUnlockModel);
         }
         return list;
@@ -231,5 +242,55 @@ public class UsefulFunctions {
     public static boolean checkLockUnlock(Context context, String packageName){
         DatabaseHelper databaseHelper = new DatabaseHelper(context);
         return databaseHelper.checkLockUnlock(packageName);
+    }
+
+    public static void startJobService(Context context){
+        Log.i("LockScreenLog", "StartJobService");
+        JobScheduler jobScheduler;
+        JobInfo jobInfo;
+        jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+        jobInfo = new JobInfo.Builder(JOB_ID, new ComponentName(context, JobService.class))
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .build();
+        jobScheduler.schedule(jobInfo);
+    }
+
+    public static void cancelJobService(Context context,int jobID){
+        JobScheduler jobScheduler;
+        JobInfo jobInfo;
+        jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        jobScheduler.cancel(jobID);
+        startJobService(context);
+    }
+
+
+    public static boolean isJobServiceOn( Context context ) {
+        JobScheduler scheduler = (JobScheduler) context.getSystemService( Context.JOB_SCHEDULER_SERVICE ) ;
+
+        boolean hasBeenScheduled = false ;
+
+        for ( JobInfo jobInfo : scheduler.getAllPendingJobs() ) {
+            if ( jobInfo.getId() == JOB_ID ) {
+                hasBeenScheduled = true ;
+                break ;
+            }
+        }
+
+        return hasBeenScheduled ;
+    }
+
+    public static void initiateAlarm(Context context){
+        final int TIME_TO_INVOKE = 60 * 1000; // try to re-start service in 5 seconds.
+        Log.i("LockScreenLog","onDestroy");
+        // get alarm manager
+        Intent intent = new Intent(context, ServiceDestroyReceiver.class);
+        AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        PendingIntent pendingIntent = PendingIntent
+                .getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        // set repeating alarm.
+        alarms.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() +
+                TIME_TO_INVOKE, TIME_TO_INVOKE, pendingIntent);
     }
 }
