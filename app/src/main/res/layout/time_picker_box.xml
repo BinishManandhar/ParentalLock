@@ -31,19 +31,19 @@
                 android:gravity="center">
 
                 <Button
-                    android:id="@+id/settime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
-                    android:text="Set Time"
-                    android:theme="@style/BrandButtonStyle"/>
-
-                <Button
                     android:id="@+id/cancel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
                     android:text="Cancel"
                     android:theme="@style/BrandButtonStyle" />
+
+                <Button
+                    android:id="@+id/settime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Set Time"
+                    android:theme="@style/BrandButtonStyle"/>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

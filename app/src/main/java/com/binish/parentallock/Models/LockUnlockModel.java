@@ -5,6 +5,15 @@ import android.content.pm.ApplicationInfo;
 public class LockUnlockModel {
     private ApplicationInfo applicationInfo;
     private int drawableInt;
+    private String lockUnlockProfile;
+
+    public String getLockUnlockProfile() {
+        return lockUnlockProfile;
+    }
+
+    public void setLockUnlockProfile(String lockUnlockProfile) {
+        this.lockUnlockProfile = lockUnlockProfile;
+    }
 
     public ApplicationInfo getApplicationInfo() {
         return applicationInfo;

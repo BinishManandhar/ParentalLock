@@ -41,6 +41,7 @@ import com.binish.parentallock.Models.LockUnlockModel;
 import com.binish.parentallock.R;
 import com.binish.parentallock.Receivers.ServiceDestroyReceiver;
 import com.binish.parentallock.services.JobService;
+import com.binish.parentallock.services.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
@@ -228,10 +229,12 @@ public class UsefulFunctions {
     }
 
     public static List<LockUnlockModel> getListForRecycler(Context context, List<ApplicationInfo> appList) {
+        DatabaseHelper databaseHelper = new DatabaseHelper(context);
         List<LockUnlockModel> list = new ArrayList<>();
         for (ApplicationInfo applicationInfo : appList) {
             LockUnlockModel lockUnlockModel = new LockUnlockModel();
             lockUnlockModel.setApplicationInfo(applicationInfo);
+            lockUnlockModel.setLockUnlockProfile(databaseHelper.getLockUnlockProfileName(applicationInfo.packageName));
             if (checkLockUnlock(context, applicationInfo.packageName))
                 lockUnlockModel.setDrawableInt(R.drawable.ic_lock_red_24dp);
             else
@@ -297,17 +300,28 @@ public class UsefulFunctions {
         final int TIME_TO_INVOKE = 60 * 1000;
 
         Intent intent = new Intent(context, ServiceDestroyReceiver.class);
-        AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pendingIntent = PendingIntent
-                .getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        Intent intentService = new Intent(context, Service.class);
 
-        // set repeating alarm.
-        boolean alarmUp = (PendingIntent.getBroadcast(context, 0,
+        AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        PendingIntent pendingIntent = PendingIntent
+                .getBroadcast(context, GlobalStaticVariables.ALARM_BROADCAST_SERVICE_DESTROY, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pendingServiceIntent = PendingIntent
+                .getService(context,GlobalStaticVariables.ALARM_START_SERVICE,intentService,PendingIntent.FLAG_CANCEL_CURRENT);
+
+        boolean alarmUp = (PendingIntent.getBroadcast(context, GlobalStaticVariables.ALARM_BROADCAST_SERVICE_DESTROY,
                 intent,
                 PendingIntent.FLAG_NO_CREATE) != null);
+        boolean serviceAlarmUp= (PendingIntent
+                .getService(context,GlobalStaticVariables.ALARM_START_SERVICE,intentService,PendingIntent.FLAG_NO_CREATE)!=null);
+
         if (alarmUp) {
             alarms.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() +
                     TIME_TO_INVOKE, TIME_TO_INVOKE, pendingIntent);
+        }
+        if(serviceAlarmUp){
+            alarms.setRepeating(AlarmManager.RTC_WAKEUP,System.currentTimeMillis() +
+                    TIME_TO_INVOKE,TIME_TO_INVOKE,pendingServiceIntent);
         }
     }
 
@@ -347,5 +361,10 @@ public class UsefulFunctions {
                 dialog.dismiss();
             }
         });
+    }
+
+    public static boolean checkUnlockTime(Context context){
+        DatabaseHelper databaseHelper = new DatabaseHelper(context);
+        return false;
     }
 }

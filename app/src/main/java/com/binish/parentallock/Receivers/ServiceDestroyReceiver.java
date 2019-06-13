@@ -22,8 +22,5 @@ public class ServiceDestroyReceiver extends BroadcastReceiver {
         else {
             UsefulFunctions.cancelJobService(context, UsefulFunctions.JOB_ID);
         }
-        if (!UsefulFunctions.isMyServiceRunning(context, Service.class)) {
-            context.startService(new Intent(context,Service.class));
-        }
     }
 }

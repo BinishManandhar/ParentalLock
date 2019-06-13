@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity
                             //---------------------//
                             UsefulFunctions.usageAccessSettingsPage(MainActivity.this);
                             //---------------------//
+                            changeFragmentTo(new AppListFragment());
                         }
                     })
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity
                         }
                     }).show();
         } else {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragmentAppList, new AppListFragment()).commit();
+            changeFragmentTo(new AppListFragment());
         }
 
         if (!policyManager.isAdminActive()) {
@@ -196,9 +197,9 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_profiles) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragmentAppList,new ProfilesListFragment()).commit();
+            changeFragmentTo(new ProfilesListFragment());
         } else if (id == R.id.nav_apps) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragmentAppList,new AppListFragment()).commit();
+            changeFragmentTo(new AppListFragment());
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
@@ -292,4 +293,7 @@ public class MainActivity extends AppCompatActivity
         //---------------------------------------------------------------//
     }//*********************Finishing the activity************************//
 
+    private void changeFragmentTo(Fragment fragment){
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentAppList,fragment).commit();
+    }
 }
