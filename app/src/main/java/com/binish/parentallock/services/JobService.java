@@ -61,6 +61,6 @@ public class JobService extends android.app.job.JobService {
         stopSelf();
         stopService(new Intent(this,JobService.class));
         UsefulFunctions.initiateAlarm(this);
-        return false;
+        return true;
     }
 }

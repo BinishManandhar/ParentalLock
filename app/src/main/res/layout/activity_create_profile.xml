@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".Activities.ActivityCreateProfile">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -20,12 +20,21 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <FrameLayout
-        android:id="@+id/fragmentAppList"
-        android:layout_marginTop="?attr/actionBarSize"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+    <include layout="@layout/content_activity_create_profile" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/createProfileFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:srcCompat="@drawable/ic_check_white_24dp" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/createProfileFabCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="@dimen/fab_margin"
+        app:srcCompat="@drawable/ic_close_white_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

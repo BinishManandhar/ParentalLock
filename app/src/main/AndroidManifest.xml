@@ -3,13 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.binish.parentallock">
 
-    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <uses-permission android:name="android.permission.BIND_DEVICE_ADMIN"
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission
+        android:name="android.permission.BIND_DEVICE_ADMIN"
         tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
-    <uses-permission android:name="com.android.alarm.permission.WAKE_LOCK"/>
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+    <uses-permission android:name="com.android.alarm.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -21,7 +23,6 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,41 +34,44 @@
         <service
             android:name=".services.Service"
             android:enabled="true"
-            android:process=":parentallock"
-             />
-
-        <service android:name=".services.JobService"
+            android:process=":parentallock" />
+        <service
+            android:name=".services.JobService"
             android:enabled="true"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <receiver
             android:name=".Receivers.ServiceDestroyReceiver"
             android:enabled="true"
             android:exported="true"
-            android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
-            android:label="ParentalServiceRestart"></receiver>
-
+            android:label="ParentalServiceRestart"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED" />
         <receiver
             android:name=".Receivers.ServiceInitiateReceiver"
             android:enabled="true"
             android:exported="true"
-            android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
-            android:label="ParentalServiceStart"></receiver>
-
-        <receiver android:name=".Receivers.ParentalLockAdminReceiver"
+            android:label="ParentalServiceStart"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED" />
+        <receiver
+            android:name=".Receivers.ParentalLockAdminReceiver"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
             <meta-data
                 android:name="android.app.device_admin"
                 android:resource="@xml/device_admin" />
 
             <intent-filter>
-                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED"/>
-                <action android:name="android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED"/>
-                <action android:name="android.app.action.DEVICE_ADMIN_DISABLED"/>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+                <action android:name="android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED" />
+                <action android:name="android.app.action.DEVICE_ADMIN_DISABLED" />
             </intent-filter>
         </receiver>
 
-        <activity android:name=".LockScreen.LockScreen"></activity>
+        <activity android:name=".LockScreen.LockScreen" />
+        <activity
+            android:name=".Activities.ActivityCreateProfile"
+            android:label="@string/title_activity_create_profile"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".Activities.ActivityIndividualProfile"></activity>
     </application>
 
 </manifest>

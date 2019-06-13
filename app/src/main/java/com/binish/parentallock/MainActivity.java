@@ -84,7 +84,6 @@ public class MainActivity extends AppCompatActivity
                         }
                     }).show();
         } else {
-            findViewById(R.id.fab).setVisibility(View.GONE);
             getSupportFragmentManager().beginTransaction().replace(R.id.fragmentAppList, new AppListFragment()).commit();
         }
 
@@ -122,15 +121,6 @@ public class MainActivity extends AppCompatActivity
 
         UsefulFunctions.appListDataFunction(this);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -138,6 +128,7 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.getMenu().getItem(0).setChecked(true);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -155,10 +146,10 @@ public class MainActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode == Activity.RESULT_OK && requestCode == PolicyManager.DPM_ACTIVATION_REQUEST_CODE) {
             Toast.makeText(this, "Admin Rights Granted", Toast.LENGTH_LONG).show();
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
+        } else if(requestCode == PolicyManager.DPM_ACTIVATION_REQUEST_CODE) {
             Toast.makeText(this, "Admin Rights is required from unwanted un-installation of this app", Toast.LENGTH_LONG).show();
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -205,10 +196,9 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_profiles) {
-            findViewById(R.id.fab).setVisibility(View.VISIBLE);
             getSupportFragmentManager().beginTransaction().replace(R.id.fragmentAppList,new ProfilesListFragment()).commit();
-        } else if (id == R.id.nav_gallery) {
-
+        } else if (id == R.id.nav_apps) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragmentAppList,new AppListFragment()).commit();
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {

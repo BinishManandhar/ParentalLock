@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.AppOpsManager;
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
@@ -22,11 +23,17 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Process;
 import android.provider.Settings;
-import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.binish.parentallock.Database.DatabaseHelper;
 import com.binish.parentallock.LockScreen.LockScreen;
@@ -36,9 +43,13 @@ import com.binish.parentallock.Receivers.ServiceDestroyReceiver;
 import com.binish.parentallock.services.JobService;
 
 import java.io.ByteArrayOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -89,14 +100,14 @@ public class UsefulFunctions {
         return granted;
     }
 
-    public static void showLockScreen(Context context, String appName, Drawable appIcon,int appColor,String packageName) {
-        Intent startMain = new Intent(context,LockScreen.class);
+    public static void showLockScreen(Context context, String appName, Drawable appIcon, int appColor, String packageName) {
+        Intent startMain = new Intent(context, LockScreen.class);
 //        startMain.addCategory(Intent.CATEGORY_HOME);
         startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startMain.putExtra("appName",appName);
-        startMain.putExtra("appColor",appColor);
-        startMain.putExtra("packageName",packageName);
-        startMain.putExtra("appIcon",drawableToByte(appIcon));
+        startMain.putExtra("appName", appName);
+        startMain.putExtra("appColor", appColor);
+        startMain.putExtra("packageName", packageName);
+        startMain.putExtra("appIcon", drawableToByte(appIcon));
         context.startActivity(startMain);
     }
 
@@ -135,22 +146,22 @@ public class UsefulFunctions {
         return ((resolveInfo.activityInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0);
     }
 
-    public static int getAppColour(Context context,ApplicationInfo applicationInfo,String packageName){
+    public static int getAppColour(Context context, ApplicationInfo applicationInfo, String packageName) {
         PackageManager pm = context.getPackageManager();
         try {
             Resources res = pm.getResourcesForApplication(applicationInfo);
-            final int[] attrs = new int[] {
+            final int[] attrs = new int[]{
                     /** AppCompat attr */
                     res.getIdentifier("colorAccent", "attr", packageName),
                     /** Framework attr */
                     android.R.attr.colorPrimary
             };
             Resources.Theme theme = res.newTheme();
-            theme.applyStyle(applicationInfo.theme,false);
+            theme.applyStyle(applicationInfo.theme, false);
             TypedArray a = theme.obtainStyledAttributes(attrs);
-            int color = a.getColor(0,a.getColor(1, Color.WHITE));
+            int color = a.getColor(0, a.getColor(1, Color.WHITE));
             String hexColor = String.format("#%06X", (0xFFFFFF & color));
-            Log.i("AppColor","Color: "+hexColor);
+            Log.i("AppColor", "Color: " + hexColor);
             return color;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
@@ -158,10 +169,10 @@ public class UsefulFunctions {
         return 0;
     }
 
-    private static byte[] drawableToByte(Drawable drawable){
+    private static byte[] drawableToByte(Drawable drawable) {
         Bitmap bitmap = null;
 
-        if(drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+        if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
             bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
         } else {
             bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
@@ -176,52 +187,52 @@ public class UsefulFunctions {
         return b;
     }
 
-    public static boolean isMyServiceRunning(Context context,Class<?> serviceClass){
+    public static boolean isMyServiceRunning(Context context, Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        for(ActivityManager.RunningServiceInfo serviceInfo: manager.getRunningServices(Integer.MAX_VALUE)){
-            Log.i("LockScreenLog","Service: "+serviceInfo.service.getClassName());
+        for (ActivityManager.RunningServiceInfo serviceInfo : manager.getRunningServices(Integer.MAX_VALUE)) {
+            Log.i("LockScreenLog", "Service: " + serviceInfo.service.getClassName());
 
-            if(serviceClass.getName().equals(serviceInfo.service.getClassName())) {
-                Log.i("LockScreenLog","My Service: "+serviceClass.getName());
+            if (serviceClass.getName().equals(serviceInfo.service.getClassName())) {
+                Log.i("LockScreenLog", "My Service: " + serviceClass.getName());
                 return true;
             }
         }
         return false;
     }
 
-    private static void insertAppListIntoDatabase(String packageName, Context context){
-        Log.i("PassValue","Name: "+packageName);
+    private static void insertAppListIntoDatabase(String packageName, Context context) {
+        Log.i("PassValue", "Name: " + packageName);
         DatabaseHelper databaseHelper = new DatabaseHelper(context);
-        databaseHelper.insertPassCheck(packageName,true);
+        databaseHelper.insertPassCheck(packageName, true);
     }
 
-    public static void changePassCheck(Context context,boolean check,String packageName){
+    public static void changePassCheck(Context context, boolean check, String packageName) {
         DatabaseHelper databaseHelper = new DatabaseHelper(context);
-        databaseHelper.changePassCheck(packageName,check);
+        databaseHelper.changePassCheck(packageName, check);
     }
 
-    public static boolean getPassValue(Context context,String packageName){
+    public static boolean getPassValue(Context context, String packageName) {
         DatabaseHelper databaseHelper = new DatabaseHelper(context);
         return databaseHelper.getPassCheck(packageName);
     }
 
-    public static void appListDataFunction(Context context){
+    public static void appListDataFunction(Context context) {
         dropTableAtFirstOpen(context);
         createTableLockUnlock(context);
         List<ApplicationInfo> list = UsefulFunctions.getAppList(context);
 
-        for (ApplicationInfo applicationInfo: list
-             ) {
-            UsefulFunctions.insertAppListIntoDatabase(applicationInfo.packageName,context);
+        for (ApplicationInfo applicationInfo : list
+                ) {
+            UsefulFunctions.insertAppListIntoDatabase(applicationInfo.packageName, context);
         }
     }
 
-    public static List<LockUnlockModel> getListForRecycler(Context context, List<ApplicationInfo> appList){
+    public static List<LockUnlockModel> getListForRecycler(Context context, List<ApplicationInfo> appList) {
         List<LockUnlockModel> list = new ArrayList<>();
-        for (ApplicationInfo applicationInfo:appList) {
+        for (ApplicationInfo applicationInfo : appList) {
             LockUnlockModel lockUnlockModel = new LockUnlockModel();
             lockUnlockModel.setApplicationInfo(applicationInfo);
-            if(checkLockUnlock(context,applicationInfo.packageName))
+            if (checkLockUnlock(context, applicationInfo.packageName))
                 lockUnlockModel.setDrawableInt(R.drawable.ic_lock_red_24dp);
             else
                 lockUnlockModel.setDrawableInt(R.drawable.ic_lock_open_green_24dp);
@@ -230,23 +241,23 @@ public class UsefulFunctions {
         return list;
     }
 
-    private static void dropTableAtFirstOpen(Context context){
+    private static void dropTableAtFirstOpen(Context context) {
         DatabaseHelper databaseHelper = new DatabaseHelper(context);
         databaseHelper.dropTablePassCheck();
 
     }
 
-    private static void createTableLockUnlock(Context context){
+    private static void createTableLockUnlock(Context context) {
         DatabaseHelper databaseHelper = new DatabaseHelper(context);
         databaseHelper.createLockUnlockTable();
     }
 
-    public static boolean checkLockUnlock(Context context, String packageName){
+    public static boolean checkLockUnlock(Context context, String packageName) {
         DatabaseHelper databaseHelper = new DatabaseHelper(context);
         return databaseHelper.checkLockUnlock(packageName);
     }
 
-    public static void startJobService(Context context){
+    public static void startJobService(Context context) {
         Log.i("LockScreenLog", "StartJobService");
         JobScheduler jobScheduler;
         JobInfo jobInfo;
@@ -258,31 +269,31 @@ public class UsefulFunctions {
         jobScheduler.schedule(jobInfo);
     }
 
-    public static void cancelJobService(Context context,int jobID){
+    public static void cancelJobService(Context context, int jobID) {
         JobScheduler jobScheduler;
         jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         jobScheduler.cancelAll();
-        if(!isJobServiceOn(context))
+        if (!isJobServiceOn(context))
             startJobService(context);
     }
 
 
-    public static boolean isJobServiceOn( Context context ) {
-        JobScheduler scheduler = (JobScheduler) context.getSystemService( Context.JOB_SCHEDULER_SERVICE ) ;
+    public static boolean isJobServiceOn(Context context) {
+        JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
-        boolean hasBeenScheduled = false ;
+        boolean hasBeenScheduled = false;
 
-        for ( JobInfo jobInfo : scheduler.getAllPendingJobs() ) {
-            if ( jobInfo.getId() == JOB_ID ) {
-                hasBeenScheduled = true ;
-                break ;
+        for (JobInfo jobInfo : scheduler.getAllPendingJobs()) {
+            if (jobInfo.getId() == JOB_ID) {
+                hasBeenScheduled = true;
+                break;
             }
         }
 
-        return hasBeenScheduled ;
+        return hasBeenScheduled;
     }
 
-    public static void initiateAlarm(Context context){
+    public static void initiateAlarm(Context context) {
         final int TIME_TO_INVOKE = 60 * 1000;
 
         Intent intent = new Intent(context, ServiceDestroyReceiver.class);
@@ -294,11 +305,47 @@ public class UsefulFunctions {
         boolean alarmUp = (PendingIntent.getBroadcast(context, 0,
                 intent,
                 PendingIntent.FLAG_NO_CREATE) != null);
-        if(alarmUp) {
+        if (alarmUp) {
             alarms.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() +
                     TIME_TO_INVOKE, TIME_TO_INVOKE, pendingIntent);
         }
     }
 
+    public static void showTimeDialog(Context context, final View parentView, final int viewID) {
+        final Dialog dialog = new Dialog(context);
+        View view = LayoutInflater.from(context).inflate(R.layout.time_picker_box, null);
+        dialog.addContentView(view,new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT));
+        dialog.show();
+        final TimePicker timePicker = view.findViewById(R.id.timepicker);
+        view.findViewById(R.id.settime).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int hourOfDay, minute;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    hourOfDay = timePicker.getHour();
+                    minute = timePicker.getMinute();
+                } else {
+                    hourOfDay = timePicker.getCurrentHour();
+                    minute = timePicker.getCurrentMinute();
+                }
 
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                calendar.set(Calendar.MINUTE, minute);
+
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a", Locale.US);
+                Date finalTime = calendar.getTime();
+                Button unlockFrom = parentView.findViewById(viewID);
+                unlockFrom.setText(simpleDateFormat.format(finalTime));
+                dialog.dismiss();
+
+            }
+        });
+        view.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+    }
 }
