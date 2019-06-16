@@ -1,23 +1,12 @@
 package com.binish.parentallock.services;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.os.Binder;
 import android.os.CountDownTimer;
 import android.os.IBinder;
-import android.os.Looper;
-import android.util.Log;
 
-import com.binish.parentallock.Receivers.ServiceDestroyReceiver;
 import com.binish.parentallock.Receivers.ServiceInitiateReceiver;
+import com.binish.parentallock.Utils.TimerTaskService;
 import com.binish.parentallock.Utils.UsefulFunctions;
 
 public class Service extends android.app.Service {
@@ -26,6 +15,7 @@ public class Service extends android.app.Service {
     String dummy = "";
     String LOGS = "PackageNames";
     Thread thread;
+    TimerTaskService tImerTaskService;
     ForegroundBinder mBinder;
 
     @Override
@@ -38,15 +28,16 @@ public class Service extends android.app.Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-//        Toast.makeText(this, "ParentalLock Service Started", Toast.LENGTH_SHORT).show();
-        Log.i("LockScreenLog", "onStartCommand");
+        tImerTaskService.initialize();
+        /*Log.i("LockScreenLog", "onStartCommand");
+        if(thread!=null){thread.interrupt();}
         thread = new Thread() {
             @Override
             public void run() {
                 if (Looper.myLooper() == null)
                     Looper.prepare();
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(800);
                     Log.i(LOGS, "Running: "+UsefulFunctions.getForegroundApp(Service.this));
                     if (UsefulFunctions.checkLockUnlock(Service.this, UsefulFunctions.getForegroundApp(Service.this))) {
                         PackageManager packageManager = Service.this.getPackageManager();
@@ -73,28 +64,44 @@ public class Service extends android.app.Service {
                 }
             }
         };
-        thread.start();
+        thread.start();*/
 
         return START_STICKY;
     }
 
     @Override
     public void onCreate() {
+        tImerTaskService = new TimerTaskService(this);
         super.onCreate();
     }
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
-//        UsefulFunctions.initiateAlarm(this);
+        UsefulFunctions.initiateAlarm(this);
         sendBroadcast(new Intent(this,ServiceInitiateReceiver.class));
         super.onTaskRemoved(rootIntent);
     }
 
     @Override
     public void onDestroy() {
-//        UsefulFunctions.initiateAlarm(this);
+        UsefulFunctions.initiateAlarm(this);
         sendBroadcast(new Intent(this,ServiceInitiateReceiver.class));
         super.onDestroy();
+    }
+
+    private void interruptingThread(){
+        UsefulFunctions.initiateAlarm(this);
+        new Thread(){
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(60*1000);
+                    thread.interrupt();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
     }
 
     public class ForegroundBinder extends Binder

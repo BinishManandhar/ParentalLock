@@ -15,11 +15,14 @@ import com.binish.parentallock.Adapters.AppListAdapter;
 import com.binish.parentallock.R;
 import com.binish.parentallock.Utils.UsefulFunctions;
 
+import java.util.Objects;
+
 public class AppListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.content_main,container,false);
+        Objects.requireNonNull(getActivity()).setTitle("Parental Lock");
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

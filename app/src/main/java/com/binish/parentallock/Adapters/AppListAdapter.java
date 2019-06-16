@@ -115,7 +115,7 @@ public class AppListAdapter extends RecyclerView.Adapter<ViewHolder> {
                             })
                             .show();
                 } else
-                    Toast.makeText(context, "Lock the app to set a profile for it", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Lock the app to set a profile", Toast.LENGTH_SHORT).show();
 
             }
         });

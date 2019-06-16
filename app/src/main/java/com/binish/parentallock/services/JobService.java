@@ -22,7 +22,7 @@ public class JobService extends android.app.job.JobService {
                 if(Looper.myLooper()==null)
                     Looper.prepare();
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(500);
                     Log.i(LOGS, "Running Job: "+UsefulFunctions.getForegroundApp(JobService.this));
                     if (UsefulFunctions.checkLockUnlock(JobService.this, UsefulFunctions.getForegroundApp(JobService.this))) {
                         PackageManager packageManager = JobService.this.getPackageManager();

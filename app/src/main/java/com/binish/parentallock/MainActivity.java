@@ -252,7 +252,7 @@ public class MainActivity extends AppCompatActivity
         if (!UsefulFunctions.isMyServiceRunning(this, Service.class)) {
             Log.i("LockScreenLog", "Starting Service");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(mIntent);
+                startService(mIntent);
 //                bindService(mIntent,connection,BIND_AUTO_CREATE);
             }
             else {
