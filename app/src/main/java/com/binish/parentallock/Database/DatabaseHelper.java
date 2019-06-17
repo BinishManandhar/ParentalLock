@@ -218,6 +218,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void deleteIndividualProfile(String profileName){
         db = this.getWritableDatabase();
         db.delete(TABLE_PROFILE_LIST,PROFILE_LIST_NAME+"='"+profileName+"'",null);
+        ContentValues cb = new ContentValues();
+        cb.put(LOCK_UNLOCK_PROFILE,"");
+        db.update(TABLE_LOCK_UNLOCK,cb,LOCK_UNLOCK_PROFILE+"='"+profileName+"'",null);
         db.close();
     }
 }

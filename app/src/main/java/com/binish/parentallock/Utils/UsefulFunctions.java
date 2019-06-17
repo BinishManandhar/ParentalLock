@@ -38,12 +38,14 @@ import android.widget.TimePicker;
 import com.binish.parentallock.Database.DatabaseHelper;
 import com.binish.parentallock.LockScreen.LockScreen;
 import com.binish.parentallock.Models.LockUnlockModel;
+import com.binish.parentallock.Models.ProfileModel;
 import com.binish.parentallock.R;
 import com.binish.parentallock.Receivers.ServiceDestroyReceiver;
 import com.binish.parentallock.services.JobService;
 import com.binish.parentallock.services.Service;
 
 import java.io.ByteArrayOutputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -260,6 +262,32 @@ public class UsefulFunctions {
         return databaseHelper.checkLockUnlock(packageName);
     }
 
+    public static boolean checkLockUnlockTime(Context context, String packageName) {
+        try {
+            DatabaseHelper databaseHelper = new DatabaseHelper(context);
+            String profileName = databaseHelper.getLockUnlockProfileName(packageName);
+
+            if(!profileName.equals("")) {
+                ProfileModel profileModel = databaseHelper.getIndividualProfile(profileName);
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a", Locale.US);
+                SimpleDateFormat simpleDateFormatFull = new SimpleDateFormat("HH:mm", Locale.US);
+
+                Calendar c = Calendar.getInstance();
+                c.setTimeInMillis(System.currentTimeMillis());
+                String time = c.get(Calendar.HOUR_OF_DAY)+":"+c.get(Calendar.MINUTE);
+
+                Date unlockFrom = simpleDateFormat.parse(profileModel.getUnlockFrom());
+                Date currentTime = simpleDateFormatFull.parse(time);
+                Date unlockTo = simpleDateFormat.parse(profileModel.getUnlockTo());
+                if(currentTime.getTime() >= unlockFrom.getTime() && currentTime.getTime() <= unlockTo.getTime())
+                    return false;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
     public static void startJobService(Context context) {
         Log.i("LockScreenLog", "StartJobService");
         JobScheduler jobScheduler;
@@ -298,6 +326,7 @@ public class UsefulFunctions {
 
     public static void initiateAlarm(Context context) {
         final int TIME_TO_INVOKE = 60 * 1000;
+        final int SERVICE_INVOKE = 12 * 60 * 60 * 1000;
 
         Intent intent = new Intent(context, ServiceDestroyReceiver.class);
         Intent intentService = new Intent(context, Service.class);
@@ -307,28 +336,28 @@ public class UsefulFunctions {
         PendingIntent pendingIntent = PendingIntent
                 .getBroadcast(context, GlobalStaticVariables.ALARM_BROADCAST_SERVICE_DESTROY, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         PendingIntent pendingServiceIntent = PendingIntent
-                .getService(context,GlobalStaticVariables.ALARM_START_SERVICE,intentService,PendingIntent.FLAG_CANCEL_CURRENT);
+                .getService(context, GlobalStaticVariables.ALARM_START_SERVICE, intentService, PendingIntent.FLAG_CANCEL_CURRENT);
 
         boolean alarmUp = (PendingIntent.getBroadcast(context, GlobalStaticVariables.ALARM_BROADCAST_SERVICE_DESTROY,
                 intent,
                 PendingIntent.FLAG_NO_CREATE) != null);
-        boolean serviceAlarmUp= (PendingIntent
-                .getService(context,GlobalStaticVariables.ALARM_START_SERVICE,intentService,PendingIntent.FLAG_NO_CREATE)!=null);
+        boolean serviceAlarmUp = (PendingIntent
+                .getService(context, GlobalStaticVariables.ALARM_START_SERVICE, intentService, PendingIntent.FLAG_NO_CREATE) != null);
 
         if (alarmUp) {
             alarms.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() +
                     TIME_TO_INVOKE, TIME_TO_INVOKE, pendingIntent);
         }
-        if(serviceAlarmUp){
-            alarms.setRepeating(AlarmManager.RTC_WAKEUP,System.currentTimeMillis() +
-                    TIME_TO_INVOKE,TIME_TO_INVOKE,pendingServiceIntent);
+        if (serviceAlarmUp) {
+            alarms.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() +
+                    SERVICE_INVOKE, SERVICE_INVOKE, pendingServiceIntent);
         }
     }
 
     public static void showTimeDialog(Context context, final View parentView, final int viewID) {
         final Dialog dialog = new Dialog(context);
         View view = LayoutInflater.from(context).inflate(R.layout.time_picker_box, null);
-        dialog.addContentView(view,new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT));
+        dialog.addContentView(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         dialog.show();
         final TimePicker timePicker = view.findViewById(R.id.timepicker);
         view.findViewById(R.id.settime).setOnClickListener(new View.OnClickListener() {
@@ -363,7 +392,7 @@ public class UsefulFunctions {
         });
     }
 
-    public static boolean checkUnlockTime(Context context){
+    public static boolean checkUnlockTime(Context context) {
         DatabaseHelper databaseHelper = new DatabaseHelper(context);
         return false;
     }

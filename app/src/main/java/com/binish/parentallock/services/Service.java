@@ -1,11 +1,18 @@
 package com.binish.parentallock.services;
 
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.os.Binder;
 import android.os.CountDownTimer;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Process;
+import android.util.Log;
 
 import com.binish.parentallock.Receivers.ServiceInitiateReceiver;
+import com.binish.parentallock.Utils.ThreadClass;
 import com.binish.parentallock.Utils.TimerTaskService;
 import com.binish.parentallock.Utils.UsefulFunctions;
 
@@ -14,7 +21,7 @@ public class Service extends android.app.Service {
     CountDownTimer checking;
     String dummy = "";
     String LOGS = "PackageNames";
-    Thread thread;
+    ThreadClass thread;
     TimerTaskService tImerTaskService;
     ForegroundBinder mBinder;
 
@@ -28,50 +35,22 @@ public class Service extends android.app.Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+//        tImerTaskService.initialize();
+        Log.i("LockScreenLog", "onStartCommand");
+        if(!thread.isAlive())
+            thread.run();
         tImerTaskService.initialize();
-        /*Log.i("LockScreenLog", "onStartCommand");
-        if(thread!=null){thread.interrupt();}
-        thread = new Thread() {
-            @Override
-            public void run() {
-                if (Looper.myLooper() == null)
-                    Looper.prepare();
-                try {
-                    Thread.sleep(800);
-                    Log.i(LOGS, "Running: "+UsefulFunctions.getForegroundApp(Service.this));
-                    if (UsefulFunctions.checkLockUnlock(Service.this, UsefulFunctions.getForegroundApp(Service.this))) {
-                        PackageManager packageManager = Service.this.getPackageManager();
-
-                        try {
-                            ApplicationInfo applicationInfo = packageManager.getApplicationInfo(UsefulFunctions.getForegroundApp(Service.this), 0);
-                            String appName = (String) packageManager.getApplicationLabel(applicationInfo);
-                            Drawable appIcon = packageManager.getApplicationIcon(applicationInfo);
-                            int color = UsefulFunctions.getAppColour(Service.this, applicationInfo, UsefulFunctions.getForegroundApp(Service.this));
-                            dummy = applicationInfo.packageName;
-                            if (UsefulFunctions.getPassValue(Service.this, UsefulFunctions.getForegroundApp(Service.this)))
-                                UsefulFunctions.showLockScreen(Service.this, appName, appIcon, color, applicationInfo.packageName);
-
-                        } catch (PackageManager.NameNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        UsefulFunctions.changePassCheck(Service.this, true, dummy);
-                    }
-                    dummy = UsefulFunctions.getForegroundApp(Service.this);
-                    thread.run();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        thread.start();*/
-
+        UsefulFunctions.initiateAlarm(this);
         return START_STICKY;
     }
 
     @Override
     public void onCreate() {
         tImerTaskService = new TimerTaskService(this);
+        thread = new ThreadClass(this);
+        thread.setDaemon(true);
+        thread.setPriority(Thread.MAX_PRIORITY);
+        thread.start();
         super.onCreate();
     }
 

@@ -27,7 +27,7 @@ public class TimerTaskService {
             mTimer = new Timer();
         }
         // schedule task
-        mTimer.scheduleAtFixedRate(new RunningTimerTask(context), 0, CHECK_INTERVAL);
+        mTimer.schedule(new RunningTimerTask(context), 1000, CHECK_INTERVAL);
     }
 }
 class RunningTimerTask extends TimerTask{
@@ -42,8 +42,9 @@ class RunningTimerTask extends TimerTask{
     public void run() {
         if (Looper.myLooper() == null)
             Looper.prepare();
-        Log.i(LOGS, "Running: "+UsefulFunctions.getForegroundApp(context));
-        if (UsefulFunctions.checkLockUnlock(context, UsefulFunctions.getForegroundApp(context))) {
+        Log.i(LOGS, "Running TimerTask: "+UsefulFunctions.getForegroundApp(context));
+        if (UsefulFunctions.checkLockUnlock(context, UsefulFunctions.getForegroundApp(context))
+                && UsefulFunctions.checkLockUnlockTime(context,UsefulFunctions.getForegroundApp(context))) {
             PackageManager packageManager = context.getPackageManager();
 
             try {

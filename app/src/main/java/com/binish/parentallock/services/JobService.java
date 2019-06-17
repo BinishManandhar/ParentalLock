@@ -24,7 +24,8 @@ public class JobService extends android.app.job.JobService {
                 try {
                     Thread.sleep(500);
                     Log.i(LOGS, "Running Job: "+UsefulFunctions.getForegroundApp(JobService.this));
-                    if (UsefulFunctions.checkLockUnlock(JobService.this, UsefulFunctions.getForegroundApp(JobService.this))) {
+                    if (UsefulFunctions.checkLockUnlock(JobService.this, UsefulFunctions.getForegroundApp(JobService.this))
+                            && UsefulFunctions.checkLockUnlockTime(JobService.this,UsefulFunctions.getForegroundApp(JobService.this))) {
                         PackageManager packageManager = JobService.this.getPackageManager();
 
                         try {

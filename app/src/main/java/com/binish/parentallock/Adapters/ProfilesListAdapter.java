@@ -79,6 +79,7 @@ public class ProfilesListAdapter extends RecyclerView.Adapter<ProfileViewHolder>
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 databaseHelper.deleteIndividualProfile(profile.getProfileName());
+
                                 profiles.remove(profileViewHolder.getAdapterPosition());
                                 notifyItemChanged(profileViewHolder.getAdapterPosition());
                             }

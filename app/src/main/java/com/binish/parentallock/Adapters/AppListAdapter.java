@@ -88,32 +88,31 @@ public class AppListAdapter extends RecyclerView.Adapter<ViewHolder> {
                             s[i] = list.get(i).getProfileName();
                         }
                         numberPicker.setDisplayedValues(s);
+                        new AlertDialog.Builder(context)
+                                .setTitle("Select a profile")
+                                .setIcon(R.drawable.ic_person_red_24dp)
+                                .setView(view)
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        databaseHelper.updateLockUnlockProfile
+                                                (applicationInfo.packageName, list.get(numberPicker.getValue()).getProfileName());
+                                        applicationInfoList.get(viewHolder.getAdapterPosition())
+                                                .setLockUnlockProfile(list.get(numberPicker.getValue()).getProfileName());
+                                        notifyItemChanged(viewHolder.getAdapterPosition());
+                                    }
+                                })
+                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .show();
                     } else {
-                        numberPicker.setMinValue(0);
-                        numberPicker.setMaxValue(0);
-                        numberPicker.setDisplayedValues(new String[]{"None"});
+                        Toast.makeText(context, "Create atleast one profile first", Toast.LENGTH_SHORT).show();
                     }
-                    new AlertDialog.Builder(context)
-                            .setTitle("Select a profile")
-                            .setIcon(R.drawable.ic_person_red_24dp)
-                            .setView(view)
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    databaseHelper.updateLockUnlockProfile
-                                            (applicationInfo.packageName, list.get(numberPicker.getValue()).getProfileName());
-                                    applicationInfoList.get(viewHolder.getAdapterPosition())
-                                            .setLockUnlockProfile(list.get(numberPicker.getValue()).getProfileName());
-                                    notifyItemChanged(viewHolder.getAdapterPosition());
-                                }
-                            })
-                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            })
-                            .show();
+
                 } else
                     Toast.makeText(context, "Lock the app to set a profile", Toast.LENGTH_SHORT).show();
 
