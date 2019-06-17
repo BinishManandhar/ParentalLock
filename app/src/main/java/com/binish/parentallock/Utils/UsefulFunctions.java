@@ -279,7 +279,9 @@ public class UsefulFunctions {
                 Date unlockFrom = simpleDateFormat.parse(profileModel.getUnlockFrom());
                 Date currentTime = simpleDateFormatFull.parse(time);
                 Date unlockTo = simpleDateFormat.parse(profileModel.getUnlockTo());
-                if(currentTime.getTime() >= unlockFrom.getTime() && currentTime.getTime() <= unlockTo.getTime())
+                if(currentTime.getTime() >= unlockFrom.getTime()
+                        && currentTime.getTime() <= unlockTo.getTime()
+                        && profileModel.isActive())
                     return false;
             }
         } catch (ParseException e) {
