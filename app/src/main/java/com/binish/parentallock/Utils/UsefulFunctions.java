@@ -245,11 +245,36 @@ public class UsefulFunctions {
             LockUnlockModel lockUnlockModel = new LockUnlockModel();
             lockUnlockModel.setApplicationInfo(applicationInfo);
             lockUnlockModel.setLockUnlockProfile(databaseHelper.getLockUnlockProfileName(applicationInfo.packageName));
-            if (checkLockUnlock(context, applicationInfo.packageName))
+            if (checkLockUnlock(context, applicationInfo.packageName)) {
                 lockUnlockModel.setDrawableInt(R.drawable.ic_lock_red_24dp);
-            else
+                if (!databaseHelper.getLockUnlockPassword(applicationInfo.packageName).equals(""))
+                    lockUnlockModel.setLockUnlockPasswordDrawable(R.drawable.ic_vpn_key_red_24dp);
+                else
+                    lockUnlockModel.setLockUnlockPasswordDrawable(R.drawable.ic_vpn_key_green_24dp);
+            } else {
                 lockUnlockModel.setDrawableInt(R.drawable.ic_lock_open_green_24dp);
+                lockUnlockModel.setLockUnlockPasswordDrawable(0);
+            }
             list.add(lockUnlockModel);
+        }
+        return list;
+    }
+
+    public static List<LockUnlockModel> getPasswordListForRecycler(Context context, List<ApplicationInfo> appList) {
+        DatabaseHelper databaseHelper = new DatabaseHelper(context);
+        List<LockUnlockModel> list = new ArrayList<>();
+        for (ApplicationInfo applicationInfo : appList) {
+            if (checkLockUnlock(context, applicationInfo.packageName)) {
+                LockUnlockModel lockUnlockModel = new LockUnlockModel();
+                lockUnlockModel.setApplicationInfo(applicationInfo);
+                lockUnlockModel.setLockUnlockProfile(databaseHelper.getLockUnlockProfileName(applicationInfo.packageName));
+                lockUnlockModel.setDrawableInt(R.drawable.ic_lock_red_24dp);
+                if (!databaseHelper.getLockUnlockPassword(applicationInfo.packageName).equals(""))
+                    lockUnlockModel.setLockUnlockPasswordDrawable(R.drawable.ic_vpn_key_red_24dp);
+                else
+                    lockUnlockModel.setLockUnlockPasswordDrawable(R.drawable.ic_vpn_key_green_24dp);
+                list.add(lockUnlockModel);
+            }
         }
         return list;
     }
@@ -275,23 +300,23 @@ public class UsefulFunctions {
             DatabaseHelper databaseHelper = new DatabaseHelper(context);
             String profileName = databaseHelper.getLockUnlockProfileName(packageName);
 
-            if(!profileName.equals("")) {
+            if (!profileName.equals("")) {
                 ProfileModel profileModel = databaseHelper.getIndividualProfile(profileName);
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a", Locale.US);
                 SimpleDateFormat simpleDateFormatFull = new SimpleDateFormat("HH:mm", Locale.US);
 
                 Calendar c = Calendar.getInstance();
                 c.setTimeInMillis(System.currentTimeMillis());
-                String time = c.get(Calendar.HOUR_OF_DAY)+":"+c.get(Calendar.MINUTE);
+                String time = c.get(Calendar.HOUR_OF_DAY) + ":" + c.get(Calendar.MINUTE);
 
                 Date unlockFrom = simpleDateFormat.parse(profileModel.getUnlockFrom());
                 Date currentTime = simpleDateFormatFull.parse(time);
                 Date unlockTo = simpleDateFormat.parse(profileModel.getUnlockTo());
-                if(currentTime.getTime() >= unlockFrom.getTime()
+                if (currentTime.getTime() >= unlockFrom.getTime()
                         && currentTime.getTime() <= unlockTo.getTime()
                         && profileModel.isActive())
                     return false;
-                if(!profileModel.isActive())
+                if (!profileModel.isActive())
                     return false;
             }
         } catch (ParseException e) {
@@ -344,7 +369,6 @@ public class UsefulFunctions {
         Intent intentService = new Intent(context, Service.class);
 
         AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-
 
 
         PendingIntent pendingIntent = PendingIntent
@@ -411,7 +435,7 @@ public class UsefulFunctions {
     }
 
     @TargetApi(23)
-    public static void checkBatteryOptimization(final Context context){
+    public static void checkBatteryOptimization(final Context context) {
         String packageName = context.getPackageName();
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         if (!pm.isIgnoringBatteryOptimizations(packageName)) {
@@ -427,7 +451,7 @@ public class UsefulFunctions {
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Toast.makeText(context,"Disable battery optimization for full functionality",Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, "Disable battery optimization for full functionality", Toast.LENGTH_LONG).show();
                         }
                     }).show();
         }

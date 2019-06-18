@@ -13,13 +13,9 @@
             android:icon="@drawable/ic_people_red_24dp"
             android:title="Profiles" />
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:title="Manage Passwords" />
     </group>
 
     <item android:title="Communicate">

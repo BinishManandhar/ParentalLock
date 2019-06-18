@@ -6,6 +6,16 @@ public class LockUnlockModel {
     private ApplicationInfo applicationInfo;
     private int drawableInt;
     private String lockUnlockProfile;
+    private int lockUnlockPasswordDrawable;
+
+
+    public int getLockUnlockPasswordDrawable() {
+        return lockUnlockPasswordDrawable;
+    }
+
+    public void setLockUnlockPasswordDrawable(int lockUnlockPasswordDrawable) {
+        this.lockUnlockPasswordDrawable = lockUnlockPasswordDrawable;
+    }
 
     public String getLockUnlockProfile() {
         return lockUnlockProfile;

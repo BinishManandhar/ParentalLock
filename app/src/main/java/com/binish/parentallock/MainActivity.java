@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -29,6 +30,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.binish.parentallock.Fragments.AppListFragment;
+import com.binish.parentallock.Fragments.PasswordListFragment;
 import com.binish.parentallock.Fragments.ProfilesListFragment;
 import com.binish.parentallock.Policy.PolicyManager;
 import com.binish.parentallock.Utils.GlobalStaticVariables;
@@ -89,10 +91,8 @@ public class MainActivity extends AppCompatActivity
             changeFragmentTo(new AppListFragment());
         }
 
-        //*************Battery Optimization******************//
-        /*if(Build.VERSION.SDK_INT>=23)
-            UsefulFunctions.checkBatteryOptimization(this);*/
-        //***************************************************//
+
+
 
         if (!policyManager.isAdminActive()) {
             new AlertDialog.Builder(this)
@@ -177,12 +177,15 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.action_uninstall) {
             if (policyManager.isAdminActive()) {
                 new AlertDialog.Builder(MainActivity.this)
-                        .setTitle("Uninstall")
-                        .setMessage("Are you sure you want to uninstall this app ?")
+                        .setTitle("Uninstallation Rights")
+                        .setMessage("Are you sure you want to unlock uninstallation rights ?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 policyManager.disableAdmin();
+                                Intent intent = new Intent(Intent.ACTION_DELETE);
+                                intent.setData(Uri.parse("package:"+getPackageName()));
+                                startActivity(intent);
                             }
                         })
                         .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -191,6 +194,11 @@ public class MainActivity extends AppCompatActivity
 
                             }
                         }).show();
+            }
+            else {
+                Intent intent = new Intent(Intent.ACTION_DELETE);
+                intent.setData(Uri.parse("package:"+getPackageName()));
+                startActivity(intent);
             }
         }
         return super.onOptionsItemSelected(item);
@@ -206,10 +214,8 @@ public class MainActivity extends AppCompatActivity
             changeFragmentTo(new ProfilesListFragment());
         } else if (id == R.id.nav_apps) {
             changeFragmentTo(new AppListFragment());
-        } else if (id == R.id.nav_slideshow) {
-
         } else if (id == R.id.nav_manage) {
-
+            changeFragmentTo(new PasswordListFragment());
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
