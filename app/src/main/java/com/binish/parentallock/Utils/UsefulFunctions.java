@@ -1,6 +1,7 @@
 package com.binish.parentallock.Utils;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.AppOpsManager;
@@ -11,7 +12,9 @@ import android.app.job.JobScheduler;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
@@ -23,9 +26,13 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.BatteryManager;
 import android.os.Build;
+import android.os.PowerManager;
 import android.os.Process;
 import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +41,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.binish.parentallock.Database.DatabaseHelper;
 import com.binish.parentallock.LockScreen.LockScreen;
@@ -283,6 +291,8 @@ public class UsefulFunctions {
                         && currentTime.getTime() <= unlockTo.getTime()
                         && profileModel.isActive())
                     return false;
+                if(!profileModel.isActive())
+                    return false;
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -297,7 +307,7 @@ public class UsefulFunctions {
         jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
         jobInfo = new JobInfo.Builder(JOB_ID, new ComponentName(context, JobService.class))
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setOverrideDeadline(0)
                 .build();
         jobScheduler.schedule(jobInfo);
     }
@@ -328,12 +338,14 @@ public class UsefulFunctions {
 
     public static void initiateAlarm(Context context) {
         final int TIME_TO_INVOKE = 60 * 1000;
-        final int SERVICE_INVOKE = 12 * 60 * 60 * 1000;
+        final int SERVICE_INVOKE = 60 * 60 * 1000;
 
         Intent intent = new Intent(context, ServiceDestroyReceiver.class);
         Intent intentService = new Intent(context, Service.class);
 
         AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+
 
         PendingIntent pendingIntent = PendingIntent
                 .getBroadcast(context, GlobalStaticVariables.ALARM_BROADCAST_SERVICE_DESTROY, intent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -347,8 +359,12 @@ public class UsefulFunctions {
                 .getService(context, GlobalStaticVariables.ALARM_START_SERVICE, intentService, PendingIntent.FLAG_NO_CREATE) != null);
 
         if (alarmUp) {
-            alarms.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() +
-                    TIME_TO_INVOKE, TIME_TO_INVOKE, pendingIntent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarms.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() +
+                        TIME_TO_INVOKE, pendingIntent);
+                alarms.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() +
+                        SERVICE_INVOKE, pendingServiceIntent);
+            }
         }
         if (serviceAlarmUp) {
             alarms.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() +
@@ -394,8 +410,46 @@ public class UsefulFunctions {
         });
     }
 
-    public static boolean checkUnlockTime(Context context) {
-        DatabaseHelper databaseHelper = new DatabaseHelper(context);
-        return false;
+    @TargetApi(23)
+    public static void checkBatteryOptimization(final Context context){
+        String packageName = context.getPackageName();
+        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+            new AlertDialog.Builder(context)
+                    .setTitle("Disable battery optimization for better functionality")
+                    .setMessage("Go to Settings->Battery Optimization->All Apps->Parental Lock->Don't optimize")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ignoreBatteryOptimizations(context);
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(context,"Disable battery optimization for full functionality",Toast.LENGTH_LONG).show();
+                        }
+                    }).show();
+        }
+    }
+
+    @TargetApi(23)
+    public static void ignoreBatteryOptimizations(Context context) {
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return;
+        }
+        String packageName = context.getPackageName();
+        try {
+            Intent intent = new Intent();
+            intent.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+
+        } catch (Exception ex) {
+            Log.wtf("IGNORE:BATTERY", ex);
+        }
+
+
     }
 }

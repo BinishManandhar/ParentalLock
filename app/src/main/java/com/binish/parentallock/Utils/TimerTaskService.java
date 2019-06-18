@@ -22,6 +22,7 @@ public class TimerTaskService {
         // cancel if already existed
         if (mTimer != null) {
             mTimer.cancel();
+            initialize();
         } else {
             // recreate new
             mTimer = new Timer();

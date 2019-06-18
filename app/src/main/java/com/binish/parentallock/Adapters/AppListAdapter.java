@@ -86,6 +86,8 @@ public class AppListAdapter extends RecyclerView.Adapter<ViewHolder> {
                         String[] s = new String[list.size()];
                         for (int i = 0; i < list.size(); i++) {
                             s[i] = list.get(i).getProfileName();
+                            if(s[i].equals(applicationInfoList.get(viewHolder.getAdapterPosition()).getLockUnlockProfile()))
+                                numberPicker.setValue(i);
                         }
                         numberPicker.setDisplayedValues(s);
                         new AlertDialog.Builder(context)

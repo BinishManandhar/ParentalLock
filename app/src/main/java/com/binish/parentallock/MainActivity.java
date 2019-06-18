@@ -31,6 +31,7 @@ import android.widget.Toast;
 import com.binish.parentallock.Fragments.AppListFragment;
 import com.binish.parentallock.Fragments.ProfilesListFragment;
 import com.binish.parentallock.Policy.PolicyManager;
+import com.binish.parentallock.Utils.GlobalStaticVariables;
 import com.binish.parentallock.Utils.UsefulFunctions;
 import com.binish.parentallock.Worker.ParentalWorker;
 import com.binish.parentallock.services.Service;
@@ -64,7 +65,6 @@ public class MainActivity extends AppCompatActivity
         createFinishReceiver();
         //***************//
 
-
         if (!UsefulFunctions.usageAccessCheck(this)) {
             new AlertDialog.Builder(this)
                     .setTitle("Permission Required")
@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity
                         public void onClick(DialogInterface dialog, int which) {
                             //---------------------//
                             UsefulFunctions.usageAccessSettingsPage(MainActivity.this);
+
                             //---------------------//
                             changeFragmentTo(new AppListFragment());
                         }
@@ -87,6 +88,11 @@ public class MainActivity extends AppCompatActivity
         } else {
             changeFragmentTo(new AppListFragment());
         }
+
+        //*************Battery Optimization******************//
+        /*if(Build.VERSION.SDK_INT>=23)
+            UsefulFunctions.checkBatteryOptimization(this);*/
+        //***************************************************//
 
         if (!policyManager.isAdminActive()) {
             new AlertDialog.Builder(this)
@@ -285,8 +291,10 @@ public class MainActivity extends AppCompatActivity
         BroadcastReceiver broadcastReceiver1 = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if(!UsefulFunctions.getForegroundApp(context).equals("com.binish.parentallock"))
+                if(!UsefulFunctions.getForegroundApp(context).equals("com.binish.parentallock")) {
                     MainActivity.this.finishAndRemoveTask();
+                    finishActivity(GlobalStaticVariables.profileFragmentRefresh);
+                }
             }
         };
         registerReceiver(broadcastReceiver1,intentFilter);
