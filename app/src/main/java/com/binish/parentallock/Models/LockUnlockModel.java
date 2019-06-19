@@ -7,7 +7,15 @@ public class LockUnlockModel {
     private int drawableInt;
     private String lockUnlockProfile;
     private int lockUnlockPasswordDrawable;
+    private int lockUnlockFingerprintDrawable;
 
+    public int getLockUnlockFingerprintDrawable() {
+        return lockUnlockFingerprintDrawable;
+    }
+
+    public void setLockUnlockFingerprintDrawable(int lockUnlockFingerprintDrawable) {
+        this.lockUnlockFingerprintDrawable = lockUnlockFingerprintDrawable;
+    }
 
     public int getLockUnlockPasswordDrawable() {
         return lockUnlockPasswordDrawable;

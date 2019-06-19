@@ -1,21 +1,18 @@
 package com.binish.parentallock.Activities;
 
-import android.os.Build;
+import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.binish.parentallock.Database.DatabaseHelper;
 import com.binish.parentallock.R;
-import com.binish.parentallock.Utils.BiometricCallBack;
-import com.binish.parentallock.Utils.BiometricUtils;
 import com.binish.parentallock.Utils.PasswordGeneration;
 import com.binish.parentallock.Utils.UsefulFunctions;
 
@@ -23,23 +20,26 @@ public class PasswordPage extends AppCompatActivity implements OnClickListener {
     EditText newPassword;
     EditText confirmPassword;
     ImageView passwordSet;
-    FloatingActionButton fingerprint;
+    CheckBox checkBox;
+    DatabaseHelper databaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_page2);
+        databaseHelper = new DatabaseHelper(this);
         FloatingActionButton backButton = findViewById(R.id.password_back);
         FloatingActionButton changeButton = findViewById(R.id.password_change);
         newPassword = findViewById(R.id.new_password);
         confirmPassword = findViewById(R.id.confirm_password);
         passwordSet = findViewById(R.id.password_set);
-        fingerprint = findViewById(R.id.fab_fingerprint);
+        checkBox = findViewById(R.id.default_fingerprint);
         if (UsefulFunctions.checkUniversalPasswordExist(this))
             passwordSet.setImageResource(R.drawable.ic_done_green_24dp);
+        checkBox.setChecked(databaseHelper.getFingerprintStatus());
         backButton.setOnClickListener(this);
         changeButton.setOnClickListener(this);
-        fingerprint.setOnClickListener(this);
+        checkBox.setOnClickListener(this);
     }
 
     @Override
@@ -57,16 +57,19 @@ public class PasswordPage extends AppCompatActivity implements OnClickListener {
                 } else if (PasswordGeneration.getSecurePassword(nPassword).equals(PasswordGeneration.getSecurePassword(cPassword))) {
                     passwordSet.setImageResource(R.drawable.ic_done_green_24dp);
                     Snackbar.make(v, "Password Stored:", Snackbar.LENGTH_SHORT).show();
-                    DatabaseHelper databaseHelper = new DatabaseHelper(this);
-                    databaseHelper.insertPassword(nPassword);
+
+                    databaseHelper.insertPassword(nPassword,checkBox.isChecked());
                     delayMovingBack();
                 } else {
                     Snackbar.make(v, "Passwords don't match", Snackbar.LENGTH_SHORT).show();
                 }
                 UsefulFunctions.hideKeyboard(this);
                 break;
-            case R.id.fab_fingerprint:
-                UsefulFunctions.displayFingerprintAccordingly(this,this);
+            case R.id.default_fingerprint:
+                if (checkBox.isChecked())
+                    databaseHelper.changeFingerprintStatus(checkBox.isChecked());
+                else
+                    databaseHelper.changeFingerprintStatus(checkBox.isChecked());
                 break;
         }
     }

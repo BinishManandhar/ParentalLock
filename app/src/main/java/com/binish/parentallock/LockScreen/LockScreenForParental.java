@@ -4,17 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.hardware.biometrics.BiometricPrompt;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -32,35 +28,21 @@ import com.binish.parentallock.Utils.UsefulFunctions;
 
 import java.util.Objects;
 
-public class LockScreen extends AppCompatActivity {
-    String packageName;
-    FloatingActionButton fingerprint;
+public class LockScreenForParental extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        setContentView(R.layout.activity_lock_screen);
         Objects.requireNonNull(getSupportActionBar()).hide();
+        setContentView(R.layout.activity_lock_screen_for_parental);
 
-        String appName = getIntent().getStringExtra("appName");
-        packageName = getIntent().getStringExtra("packageName");
-        int appColor = getIntent().getIntExtra("appColor", Color.WHITE);
-        byte[] b = getIntent().getByteArrayExtra("appIcon");
-        Bitmap appIcon = BitmapFactory.decodeByteArray(b, 0, b.length);
-
-        TextView lockAppName = findViewById(R.id.lockAppName);
         ImageView lockAppIcon = findViewById(R.id.lockAppIcon);
         final EditText lockInput = findViewById(R.id.lockInput);
 
-
-        findViewById(R.id.lockScreen).setBackgroundColor(appColor);
-        lockAppName.setText(appName);
-        lockAppIcon.setImageBitmap(appIcon);
+        lockAppIcon.setImageResource(R.drawable.ic_launcher_foreground);
 
         lockInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -68,8 +50,8 @@ public class LockScreen extends AppCompatActivity {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     String enteredPassword = lockInput.getText().toString();
                     if (PasswordGeneration.getSecurePassword(enteredPassword)
-                            .equals(UsefulFunctions.getUniversalPassword(LockScreen.this))
-                            || enteredPassword.equals(UsefulFunctions.getIndividualPassword(LockScreen.this, packageName))) {
+                            .equals(UsefulFunctions.getUniversalPassword(LockScreenForParental.this))
+                            || enteredPassword.equals(UsefulFunctions.getIndividualPassword(LockScreenForParental.this, getPackageName()))) {
                         entrySuccessful();
                     }
                     return true;
@@ -78,15 +60,15 @@ public class LockScreen extends AppCompatActivity {
             }
         });
 
-        fingerprint = findViewById(R.id.fab_fingerprint);
+        FloatingActionButton fingerprint = findViewById(R.id.fab_fingerprint);
         if (!BiometricUtils.isHardwareSupported(this)
-                || !UsefulFunctions.checkFingerprintLockExist(this,packageName))
+                || !UsefulFunctions.checkUniversalFingerprintStatus(this))
             fingerprint.hide();
         else
             fingerprint.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    displayFingerprintAccordingly(LockScreen.this, LockScreen.this);
+                    displayFingerprintAccordingly(LockScreenForParental.this, LockScreenForParental.this);
                 }
             });
 
@@ -125,12 +107,12 @@ public class LockScreen extends AppCompatActivity {
         return new BiometricPrompt.AuthenticationCallback() {
             @Override
             public void onAuthenticationError(int errorCode, CharSequence errString) {
-                Toast.makeText(LockScreen.this, errString, Toast.LENGTH_SHORT).show();
+                Toast.makeText(LockScreenForParental.this, errString, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onAuthenticationHelp(int helpCode, CharSequence helpString) {
-                Toast.makeText(LockScreen.this, helpString, Toast.LENGTH_LONG).show();
+                Toast.makeText(LockScreenForParental.this, helpString, Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -140,7 +122,7 @@ public class LockScreen extends AppCompatActivity {
 
             @Override
             public void onAuthenticationFailed() {
-                Toast.makeText(LockScreen.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LockScreenForParental.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
             }
         };
     }
@@ -149,28 +131,6 @@ public class LockScreen extends AppCompatActivity {
 
     //*************************Successful*******************************************//
     private void entrySuccessful(){
-        UsefulFunctions.changePassCheck(LockScreen.this, false, packageName);
-        finishAndRemoveTask();
-        Intent intent = new Intent("finish_activity");
-        intent.putExtra("where", "lockScreen");
-        sendBroadcast(intent);
-    }
-    //******************************************************************************//
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        this.finishAndRemoveTask();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        this.finishAndRemoveTask();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+        finish();
     }
 }

@@ -271,10 +271,17 @@ public class UsefulFunctions {
                 lockUnlockModel.setApplicationInfo(applicationInfo);
                 lockUnlockModel.setLockUnlockProfile(databaseHelper.getLockUnlockProfileName(applicationInfo.packageName));
                 lockUnlockModel.setDrawableInt(R.drawable.ic_lock_red_24dp);
+
                 if (!databaseHelper.getLockUnlockPassword(applicationInfo.packageName).equals(""))
                     lockUnlockModel.setLockUnlockPasswordDrawable(R.drawable.ic_vpn_key_red_24dp);
                 else
                     lockUnlockModel.setLockUnlockPasswordDrawable(R.drawable.ic_vpn_key_green_24dp);
+
+                if(databaseHelper.getLockUnlockFingerprint(applicationInfo.packageName))
+                    lockUnlockModel.setLockUnlockFingerprintDrawable(R.drawable.ic_fingerprint_red_24dp);
+                else
+                    lockUnlockModel.setLockUnlockFingerprintDrawable(R.drawable.ic_fingerprint_green_24dp);
+
                 list.add(lockUnlockModel);
             }
         }
@@ -451,6 +458,16 @@ public class UsefulFunctions {
         return !databaseHelper.checkPasswordExist().equals("");
     }
 
+    public static boolean checkFingerprintLockExist(Context context,String packageName){
+        DatabaseHelper databaseHelper = new DatabaseHelper(context);
+        return databaseHelper.getLockUnlockFingerprint(packageName);
+    }
+
+    public static boolean checkUniversalFingerprintStatus(Context context){
+        DatabaseHelper databaseHelper = new DatabaseHelper(context);
+        return databaseHelper.getFingerprintStatus();
+    }
+
     @TargetApi(23)
     public static void checkBatteryOptimization(final Context context) {
         String packageName = context.getPackageName();
@@ -505,15 +522,4 @@ public class UsefulFunctions {
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    public static void displayFingerprintAccordingly(Context context, Activity activity){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            if (BiometricUtils.isPermissionGranted(context)) {
-                if(BiometricUtils.isHardwareSupported(context))
-                    if(BiometricUtils.isFingerprintAvailable(context))
-                        BiometricUtils.displayBiometricPrompt(context, new BiometricCallBack(context));
-            } else {
-                BiometricUtils.askPermissionForFingerprint(activity);
-            }
-        }
-    }
 }

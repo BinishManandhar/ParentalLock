@@ -48,6 +48,7 @@ public class PasswordListAdapter extends RecyclerView.Adapter<PasswordViewHolder
         passwordViewHolder.appName.setText(appName);
         passwordViewHolder.appIcon.setImageDrawable(packageManager.getApplicationIcon(lockUnlockModel.getApplicationInfo()));
         passwordViewHolder.passwordCheck.setImageResource(lockUnlockModel.getLockUnlockPasswordDrawable());
+        passwordViewHolder.fingerprintCheck.setImageResource(lockUnlockModel.getLockUnlockFingerprintDrawable());
         passwordViewHolder.passwordCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -102,6 +103,21 @@ public class PasswordListAdapter extends RecyclerView.Adapter<PasswordViewHolder
 
             }
         });
+        passwordViewHolder.fingerprintCheck.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(lockUnlockModel.getLockUnlockFingerprintDrawable()==R.drawable.ic_fingerprint_green_24dp) {
+                    lockUnlockModel.setLockUnlockFingerprintDrawable(R.drawable.ic_fingerprint_red_24dp);
+                    new DatabaseHelper(context).setLockUnlockFingerprint(packageName,true);
+                    notifyItemChanged(passwordViewHolder.getAdapterPosition());
+                }
+                else {
+                    lockUnlockModel.setLockUnlockFingerprintDrawable(R.drawable.ic_fingerprint_green_24dp);
+                    new DatabaseHelper(context).setLockUnlockFingerprint(packageName,false);
+                    notifyItemChanged(passwordViewHolder.getAdapterPosition());
+                }
+            }
+        });
     }
 
     @Override
@@ -114,11 +130,13 @@ class PasswordViewHolder extends RecyclerView.ViewHolder {
     ImageView appIcon;
     TextView appName;
     ImageView passwordCheck;
+    ImageView fingerprintCheck;
 
     PasswordViewHolder(@NonNull View itemView) {
         super(itemView);
         appName = itemView.findViewById(R.id.appName);
         appIcon = itemView.findViewById(R.id.appIcon);
         passwordCheck = itemView.findViewById(R.id.password_check);
+        fingerprintCheck = itemView.findViewById(R.id.fingerprint_check);
     }
 }

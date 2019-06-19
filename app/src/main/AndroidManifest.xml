@@ -16,8 +16,9 @@
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
 
-    <uses-feature android:name="android.hardware.fingerprint"
-        android:required="false"/>
+    <uses-feature
+        android:name="android.hardware.fingerprint"
+        android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -78,7 +79,8 @@
             android:label="@string/title_activity_create_profile"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Activities.ActivityIndividualProfile" />
-        <activity android:name=".Activities.PasswordPage"></activity>
+        <activity android:name=".Activities.PasswordPage" />
+        <activity android:name=".LockScreen.LockScreenForParental"></activity>
     </application>
 
 </manifest>

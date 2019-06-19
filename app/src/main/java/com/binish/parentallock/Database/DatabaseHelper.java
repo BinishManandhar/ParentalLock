@@ -24,6 +24,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String LOCK_UNLOCK_PROFILE = "profile_name";
     private static final String LOCK_UNLOCK_CHECK = "check_lock_unlock";
     private static final String LOCK_UNLOCK_PASSWORD = "lock_unlock_password";
+    private static final String LOCK_UNLOCK_FINGERPRINT = "lock_unlock_fingerprint";
     private static final String TABLE_PROFILE_LIST = "TableProfileList";
     private static final String PROFILE_LIST_NAME = "profile_name";
     private static final String PROFILE_LIST_FROM = "profile_from";
@@ -32,6 +33,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_UNIVERSAL_PASSWORD = "TablePassword";
     private static final String PASSWORD = "password";
     private static final String PASSWORD_UNIQUE_ID = "unique_id";
+    private static final String PASSWORD_FINGERPRINT_CHECK = "fingerprint_check";
 
     Context context;
     SQLiteDatabase db;
@@ -59,6 +61,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     +LOCK_UNLOCK_NAME+" TEXT PRIMARY KEY,"
                     +LOCK_UNLOCK_PROFILE+" TEXT,"
                     +LOCK_UNLOCK_PASSWORD+" TEXT,"
+                    +LOCK_UNLOCK_FINGERPRINT+" TEXT,"
                     +LOCK_UNLOCK_CHECK+" TEXT"+")";
             db.execSQL(createTableLockUnlock);
             db.close();
@@ -83,6 +86,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db = this.getWritableDatabase();
         String createTable = "CREATE TABLE IF NOT EXISTS "+TABLE_UNIVERSAL_PASSWORD+ "("
                 +PASSWORD_UNIQUE_ID+" TEXT PRIMARY KEY,"
+                +PASSWORD_FINGERPRINT_CHECK+" TEXT,"
                 +PASSWORD+" TEXT UNIQUE)";
         db.execSQL(createTable);
         db.close();
@@ -100,6 +104,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         c.put(LOCK_UNLOCK_CHECK,String.valueOf(check));
         c.put(LOCK_UNLOCK_PROFILE,"");
         c.put(LOCK_UNLOCK_PASSWORD,"");
+        c.put(LOCK_UNLOCK_FINGERPRINT,"false");
         db.replace(TABLE_LOCK_UNLOCK,null,c);
     }
 
@@ -139,6 +144,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         c.close();
         db.close();
         return password;
+    }
+
+    public boolean getLockUnlockFingerprint(String packageName){
+        db = this.getReadableDatabase();
+        String select = "SELECT * FROM "+TABLE_LOCK_UNLOCK+" WHERE "+LOCK_UNLOCK_NAME+"='"+packageName+"'";
+        Cursor c = db.rawQuery(select,null);
+        boolean check = false;
+        while (c.moveToNext()){
+            check = c.getString(c.getColumnIndex(LOCK_UNLOCK_FINGERPRINT)).equalsIgnoreCase("true");
+        }
+        c.close();
+        db.close();
+        return check;
+    }
+
+    public void setLockUnlockFingerprint(String packageName,boolean check){
+        db = this.getWritableDatabase();
+        ContentValues cb = new ContentValues();
+        cb.put(LOCK_UNLOCK_FINGERPRINT,String.valueOf(check));
+        db.update(TABLE_LOCK_UNLOCK,cb,LOCK_UNLOCK_NAME+"='"+packageName+"'",null);
+        db.close();
     }
 
     public void updateLockUnlockPassword(String packageName,String password){
@@ -261,14 +287,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void insertPassword(String password){
+    public void insertPassword(String password,boolean check){
         db = this.getWritableDatabase();
         String hashPassword = PasswordGeneration.getSecurePassword(password);
         ContentValues cb = new ContentValues();
         cb.put(PASSWORD_UNIQUE_ID,1);
         cb.put(PASSWORD,hashPassword);
+        cb.put(PASSWORD_FINGERPRINT_CHECK,String.valueOf(check));
         db.replace(TABLE_UNIVERSAL_PASSWORD,null,cb);
         db.close();
+    }
+
+    public void changeFingerprintStatus(boolean check){
+        db = this.getWritableDatabase();
+        ContentValues cb = new ContentValues();
+        cb.put(PASSWORD_FINGERPRINT_CHECK,String.valueOf(check));
+        db.update(TABLE_UNIVERSAL_PASSWORD,cb,PASSWORD_UNIQUE_ID+"='"+1+"'",null);
+        db.close();
+    }
+
+    public boolean getFingerprintStatus(){
+        db = this.getReadableDatabase();
+        String select = "SELECT * FROM "+TABLE_UNIVERSAL_PASSWORD;
+        Cursor c = db.rawQuery(select,null);
+        boolean check = false;
+        while(c.moveToNext()){
+            check = c.getString(c.getColumnIndex(PASSWORD_FINGERPRINT_CHECK)).equalsIgnoreCase("true");
+        }
+        c.close();
+        db.close();
+        return check;
     }
 
     public String checkPasswordExist(){

@@ -52,19 +52,4 @@ public class BiometricUtils {
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.USE_FINGERPRINT}, GlobalStaticVariables.FINGERPRINT_REQUEST_CODE);
         }
     }
-
-    @TargetApi(Build.VERSION_CODES.P)
-    public static void displayBiometricPrompt(Context context, final BiometricCallBack biometricCallback) {
-        BiometricPrompt bm = new BiometricPrompt.Builder(context)
-                .setTitle("Parental Lock")
-                .setSubtitle("To login to your App")
-                .setDescription("Place your finger on the sensor")
-                .setNegativeButton("Cancel", context.getMainExecutor(), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        biometricCallback.onAuthenticationError(BiometricPrompt.BIOMETRIC_ERROR_CANCELED,"Cancelled");
-                    }
-                }).build();
-        bm.authenticate(new CancellationSignal(),context.getMainExecutor(),new BiometricCallBack(context));
-    }
 }

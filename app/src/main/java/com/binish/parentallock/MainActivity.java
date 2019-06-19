@@ -33,6 +33,7 @@ import com.binish.parentallock.Activities.PasswordPage;
 import com.binish.parentallock.Fragments.AppListFragment;
 import com.binish.parentallock.Fragments.PasswordListFragment;
 import com.binish.parentallock.Fragments.ProfilesListFragment;
+import com.binish.parentallock.LockScreen.LockScreenForParental;
 import com.binish.parentallock.Policy.PolicyManager;
 import com.binish.parentallock.Utils.GlobalStaticVariables;
 import com.binish.parentallock.Utils.UsefulFunctions;
@@ -96,6 +97,10 @@ public class MainActivity extends AppCompatActivity
 
         if(!checkUniversalPasswordExist(this)){
             Intent intent = new Intent(this,PasswordPage.class);
+            startActivity(intent);
+        }
+        else {
+            Intent intent = new Intent(this,LockScreenForParental.class);
             startActivity(intent);
         }
 
@@ -231,7 +236,6 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
 
 
     @Override
