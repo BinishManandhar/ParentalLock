@@ -1,5 +1,6 @@
 package com.binish.parentallock.Activities;
 
+import android.os.Build;
 import android.os.CountDownTimer;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,6 +14,8 @@ import android.widget.ImageView;
 
 import com.binish.parentallock.Database.DatabaseHelper;
 import com.binish.parentallock.R;
+import com.binish.parentallock.Utils.BiometricCallBack;
+import com.binish.parentallock.Utils.BiometricUtils;
 import com.binish.parentallock.Utils.PasswordGeneration;
 import com.binish.parentallock.Utils.UsefulFunctions;
 
@@ -20,6 +23,7 @@ public class PasswordPage extends AppCompatActivity implements OnClickListener {
     EditText newPassword;
     EditText confirmPassword;
     ImageView passwordSet;
+    FloatingActionButton fingerprint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +34,7 @@ public class PasswordPage extends AppCompatActivity implements OnClickListener {
         newPassword = findViewById(R.id.new_password);
         confirmPassword = findViewById(R.id.confirm_password);
         passwordSet = findViewById(R.id.password_set);
+        fingerprint = findViewById(R.id.fab_fingerprint);
         if (UsefulFunctions.checkUniversalPasswordExist(this))
             passwordSet.setImageResource(R.drawable.ic_done_green_24dp);
         backButton.setOnClickListener(this);
@@ -58,6 +63,12 @@ public class PasswordPage extends AppCompatActivity implements OnClickListener {
                     Snackbar.make(v, "Passwords don't match", Snackbar.LENGTH_SHORT).show();
                 }
                 UsefulFunctions.hideKeyboard(this);
+                break;
+            case R.id.fab_fingerprint:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    if(BiometricUtils.isPermissionGranted(this))
+                        BiometricUtils.displayBiometricPrompt(this,new BiometricCallBack());
+                }
                 break;
         }
     }

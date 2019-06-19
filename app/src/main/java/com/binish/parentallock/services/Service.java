@@ -33,14 +33,12 @@ public class Service extends android.app.Service {
         Log.i("LockScreenLog", "onStartCommand");
         if(!thread.isAlive())
             thread.run();
-        tImerTaskService.initialize();
         UsefulFunctions.initiateAlarm(this);
         return START_STICKY;
     }
 
     @Override
     public void onCreate() {
-        tImerTaskService = new TimerTaskService(this);
         thread = new ThreadClass(this);
         thread.setDaemon(true);
         thread.setPriority(Thread.MAX_PRIORITY);
