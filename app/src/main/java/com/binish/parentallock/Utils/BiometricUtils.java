@@ -9,8 +9,10 @@ import android.content.pm.PackageManager;
 import android.hardware.biometrics.BiometricPrompt;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
+import android.os.CancellationSignal;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat;
+import android.util.Log;
 
 public class BiometricUtils {
 
@@ -42,6 +44,7 @@ public class BiometricUtils {
     }
 
     public static void askPermissionForFingerprint(Activity activity){
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.USE_BIOMETRIC}, GlobalStaticVariables.FINGERPRINT_REQUEST_CODE);
         }
@@ -52,16 +55,16 @@ public class BiometricUtils {
 
     @TargetApi(Build.VERSION_CODES.P)
     public static void displayBiometricPrompt(Context context, final BiometricCallBack biometricCallback) {
-        new BiometricPrompt.Builder(context)
-                .setTitle("Fingerprint Setup")
-                .setSubtitle("Login to Parental Lock App")
+        BiometricPrompt bm = new BiometricPrompt.Builder(context)
+                .setTitle("Parental Lock")
+                .setSubtitle("To login to your App")
                 .setDescription("Place your finger on the sensor")
                 .setNegativeButton("Cancel", context.getMainExecutor(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        biometricCallback.onAuthenticationError(BiometricPrompt.BIOMETRIC_ERROR_CANCELED,"cancelled");
+                        biometricCallback.onAuthenticationError(BiometricPrompt.BIOMETRIC_ERROR_CANCELED,"Cancelled");
                     }
-                })
-                .build();
+                }).build();
+        bm.authenticate(new CancellationSignal(),context.getMainExecutor(),new BiometricCallBack(context));
     }
 }

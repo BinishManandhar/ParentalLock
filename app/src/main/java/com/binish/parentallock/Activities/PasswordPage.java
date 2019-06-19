@@ -39,13 +39,14 @@ public class PasswordPage extends AppCompatActivity implements OnClickListener {
             passwordSet.setImageResource(R.drawable.ic_done_green_24dp);
         backButton.setOnClickListener(this);
         changeButton.setOnClickListener(this);
+        fingerprint.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.password_back:
-                if(checkForMovingBack(v))
+                if (checkForMovingBack(v))
                     onBackPressed();
                 break;
             case R.id.password_change:
@@ -65,17 +66,14 @@ public class PasswordPage extends AppCompatActivity implements OnClickListener {
                 UsefulFunctions.hideKeyboard(this);
                 break;
             case R.id.fab_fingerprint:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    if(BiometricUtils.isPermissionGranted(this))
-                        BiometricUtils.displayBiometricPrompt(this,new BiometricCallBack());
-                }
+                UsefulFunctions.displayFingerprintAccordingly(this,this);
                 break;
         }
     }
 
     @Override
     public void onBackPressed() {
-        if(checkForMovingBack(findViewById(android.R.id.content)))
+        if (checkForMovingBack(findViewById(android.R.id.content)))
             super.onBackPressed();
     }
 

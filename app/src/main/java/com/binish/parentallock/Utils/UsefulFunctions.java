@@ -504,4 +504,16 @@ public class UsefulFunctions {
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
+
+    public static void displayFingerprintAccordingly(Context context, Activity activity){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (BiometricUtils.isPermissionGranted(context)) {
+                if(BiometricUtils.isHardwareSupported(context))
+                    if(BiometricUtils.isFingerprintAvailable(context))
+                        BiometricUtils.displayBiometricPrompt(context, new BiometricCallBack(context));
+            } else {
+                BiometricUtils.askPermissionForFingerprint(activity);
+            }
+        }
+    }
 }
