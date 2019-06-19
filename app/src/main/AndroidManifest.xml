@@ -7,7 +7,7 @@
         android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES"/>
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
     <uses-permission
         android:name="android.permission.BIND_DEVICE_ADMIN"
         tools:ignore="ProtectedPermissions" />
@@ -72,7 +72,8 @@
             android:name=".Activities.ActivityCreateProfile"
             android:label="@string/title_activity_create_profile"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Activities.ActivityIndividualProfile"></activity>
+        <activity android:name=".Activities.ActivityIndividualProfile" />
+        <activity android:name=".Activities.PasswordPage"></activity>
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package com.binish.parentallock.Utils;
+package com.binish.parentallock.services;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Looper;
 import android.util.Log;
+
+import com.binish.parentallock.Utils.UsefulFunctions;
 
 import java.util.Timer;
 import java.util.TimerTask;

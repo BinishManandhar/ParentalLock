@@ -2,6 +2,7 @@ package com.binish.parentallock.Utils;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.AppOpsManager;
@@ -37,6 +38,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -325,6 +327,16 @@ public class UsefulFunctions {
         return true;
     }
 
+    public static String getUniversalPassword(Context context){
+        DatabaseHelper databaseHelper = new DatabaseHelper(context);
+        return databaseHelper.checkPasswordExist();
+    }
+
+    public static String getIndividualPassword(Context context,String packageName){
+        DatabaseHelper databaseHelper = new DatabaseHelper(context);
+        return databaseHelper.getLockUnlockPassword(packageName);
+    }
+
     public static void startJobService(Context context) {
         Log.i("LockScreenLog", "StartJobService");
         JobScheduler jobScheduler;
@@ -434,6 +446,11 @@ public class UsefulFunctions {
         });
     }
 
+    public static boolean checkUniversalPasswordExist(Context context){
+        DatabaseHelper databaseHelper = new DatabaseHelper(context);
+        return !databaseHelper.checkPasswordExist().equals("");
+    }
+
     @TargetApi(23)
     public static void checkBatteryOptimization(final Context context) {
         String packageName = context.getPackageName();
@@ -475,5 +492,16 @@ public class UsefulFunctions {
         }
 
 
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

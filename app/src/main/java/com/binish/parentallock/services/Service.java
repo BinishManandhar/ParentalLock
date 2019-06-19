@@ -1,19 +1,13 @@
 package com.binish.parentallock.services;
 
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.os.Binder;
 import android.os.CountDownTimer;
 import android.os.IBinder;
-import android.os.Looper;
-import android.os.Process;
 import android.util.Log;
 
 import com.binish.parentallock.Receivers.ServiceInitiateReceiver;
 import com.binish.parentallock.Utils.ThreadClass;
-import com.binish.parentallock.Utils.TimerTaskService;
 import com.binish.parentallock.Utils.UsefulFunctions;
 
 public class Service extends android.app.Service {

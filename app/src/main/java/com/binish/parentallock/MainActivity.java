@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.binish.parentallock.Activities.PasswordPage;
 import com.binish.parentallock.Fragments.AppListFragment;
 import com.binish.parentallock.Fragments.PasswordListFragment;
 import com.binish.parentallock.Fragments.ProfilesListFragment;
@@ -43,6 +44,7 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
 import static com.binish.parentallock.Utils.UsefulFunctions.JOB_ID;
+import static com.binish.parentallock.Utils.UsefulFunctions.checkUniversalPasswordExist;
 import static com.binish.parentallock.Utils.UsefulFunctions.isJobServiceOn;
 
 public class MainActivity extends AppCompatActivity
@@ -89,10 +91,13 @@ public class MainActivity extends AppCompatActivity
                     }).show();
         } else {
             changeFragmentTo(new AppListFragment());
+
         }
 
-
-
+        if(!checkUniversalPasswordExist(this)){
+            Intent intent = new Intent(this,PasswordPage.class);
+            startActivity(intent);
+        }
 
         if (!policyManager.isAdminActive()) {
             new AlertDialog.Builder(this)

@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Window;
 import android.view.WindowManager;
@@ -14,7 +15,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.binish.parentallock.Activities.PasswordPage;
 import com.binish.parentallock.R;
+import com.binish.parentallock.Utils.PasswordGeneration;
 import com.binish.parentallock.services.Service;
 import com.binish.parentallock.Utils.UsefulFunctions;
 
@@ -42,6 +45,7 @@ public class LockScreen extends AppCompatActivity {
         ImageView lockAppIcon = findViewById(R.id.lockAppIcon);
         final EditText lockInput = findViewById(R.id.lockInput);
 
+
         findViewById(R.id.lockScreen).setBackgroundColor(appColor);
         lockAppName.setText(appName);
         lockAppIcon.setImageBitmap(appIcon);
@@ -50,7 +54,10 @@ public class LockScreen extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if(actionId == EditorInfo.IME_ACTION_DONE){
-                    if(lockInput.getText().toString().equals("p")) {
+                    String enteredPassword = lockInput.getText().toString();
+                    if(PasswordGeneration.getSecurePassword(enteredPassword)
+                            .equals(UsefulFunctions.getUniversalPassword(LockScreen.this))
+                            || enteredPassword.equals(UsefulFunctions.getIndividualPassword(LockScreen.this,packageName))) {
                         UsefulFunctions.changePassCheck(LockScreen.this,false,packageName);
                         finishAndRemoveTask();
                         Intent intent = new Intent("finish_activity");

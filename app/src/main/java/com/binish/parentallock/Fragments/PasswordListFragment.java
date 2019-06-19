@@ -1,5 +1,6 @@
 package com.binish.parentallock.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.binish.parentallock.Activities.PasswordPage;
 import com.binish.parentallock.Adapters.AppListAdapter;
 import com.binish.parentallock.Adapters.PasswordListAdapter;
 import com.binish.parentallock.Models.LockUnlockModel;
@@ -27,6 +29,14 @@ public class PasswordListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_passwords,container,false);
         RecyclerView recyclerView = view.findViewById(R.id.password_recyclerView);
         CardView cardView = view.findViewById(R.id.password_cardView);
+
+        cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(),PasswordPage.class);
+                startActivity(intent);
+            }
+        });
 
         List<LockUnlockModel> applicationList = UsefulFunctions.getPasswordListForRecycler(getActivity(),
                 UsefulFunctions.getAppList(getActivity()));

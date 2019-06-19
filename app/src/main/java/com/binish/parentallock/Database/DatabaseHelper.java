@@ -270,4 +270,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.replace(TABLE_UNIVERSAL_PASSWORD,null,cb);
         db.close();
     }
+
+    public String checkPasswordExist(){
+        db = this.getReadableDatabase();
+        String select = "SELECT * FROM "+TABLE_UNIVERSAL_PASSWORD;
+        Cursor c = db.rawQuery(select,null);
+        String password ="";
+        while (c.moveToNext()){
+            password = c.getString(c.getColumnIndex(PASSWORD));
+        }
+        c.close();
+        db.close();
+        return password;
+    }
 }
