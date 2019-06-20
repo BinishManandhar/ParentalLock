@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.binish.parentallock.Database.DatabaseHelper;
 import com.binish.parentallock.Models.LockUnlockModel;
 import com.binish.parentallock.R;
+import com.binish.parentallock.Utils.BiometricUtils;
 
 import java.util.List;
 
@@ -48,6 +49,8 @@ public class PasswordListAdapter extends RecyclerView.Adapter<PasswordViewHolder
         passwordViewHolder.appName.setText(appName);
         passwordViewHolder.appIcon.setImageDrawable(packageManager.getApplicationIcon(lockUnlockModel.getApplicationInfo()));
         passwordViewHolder.passwordCheck.setImageResource(lockUnlockModel.getLockUnlockPasswordDrawable());
+        if(!BiometricUtils.isHardwareSupported(context))
+            passwordViewHolder.fingerprintCheck.setVisibility(View.GONE);
         passwordViewHolder.fingerprintCheck.setImageResource(lockUnlockModel.getLockUnlockFingerprintDrawable());
         passwordViewHolder.passwordCheck.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,6 +121,9 @@ public class PasswordListAdapter extends RecyclerView.Adapter<PasswordViewHolder
                 }
             }
         });
+
+
+        
     }
 
     @Override
@@ -131,12 +137,13 @@ class PasswordViewHolder extends RecyclerView.ViewHolder {
     TextView appName;
     ImageView passwordCheck;
     ImageView fingerprintCheck;
-
+    LinearLayout appNameLayout;
     PasswordViewHolder(@NonNull View itemView) {
         super(itemView);
         appName = itemView.findViewById(R.id.appName);
         appIcon = itemView.findViewById(R.id.appIcon);
         passwordCheck = itemView.findViewById(R.id.password_check);
         fingerprintCheck = itemView.findViewById(R.id.fingerprint_check);
+        appNameLayout = itemView.findViewById(R.id.app_name_layout);
     }
 }

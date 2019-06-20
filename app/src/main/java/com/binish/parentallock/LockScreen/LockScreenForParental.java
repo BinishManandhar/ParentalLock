@@ -11,6 +11,8 @@ import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -21,11 +23,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.andrognito.patternlockview.PatternLockView;
+import com.andrognito.patternlockview.listener.PatternLockViewListener;
+import com.andrognito.patternlockview.utils.PatternLockUtils;
 import com.binish.parentallock.R;
 import com.binish.parentallock.Utils.BiometricUtils;
+import com.binish.parentallock.Utils.GlobalStaticVariables;
 import com.binish.parentallock.Utils.PasswordGeneration;
 import com.binish.parentallock.Utils.UsefulFunctions;
 
+import java.util.List;
 import java.util.Objects;
 
 public class LockScreenForParental extends AppCompatActivity {
@@ -42,7 +49,12 @@ public class LockScreenForParental extends AppCompatActivity {
         ImageView lockAppIcon = findViewById(R.id.lockAppIcon);
         final EditText lockInput = findViewById(R.id.lockInput);
 
-        lockAppIcon.setImageResource(R.drawable.ic_launcher_foreground);
+        try{
+            lockAppIcon.setImageResource(R.drawable.ic_launcher_foreground);
+        }
+        catch (Exception e){
+            Log.i("ResourceException",""+e);
+        }
 
         lockInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -72,6 +84,45 @@ public class LockScreenForParental extends AppCompatActivity {
                 }
             });
 
+        //*******************************Pattern Lock*************************************************************//
+        CardView patternCardView = findViewById(R.id.pattern_cardView);
+        if(UsefulFunctions.checkUniversalPasswordType(this).equals(GlobalStaticVariables.PASSWORDTYPE_TEXT))
+            patternCardView.setVisibility(View.INVISIBLE);
+        else
+            lockInput.setVisibility(View.INVISIBLE);
+
+        final PatternLockView patternLockView = findViewById(R.id.pattern_lockView);
+        patternLockView.setTactileFeedbackEnabled(true);
+        patternLockView.addPatternLockListener(new PatternLockViewListener() {
+            @Override
+            public void onStarted() {
+
+            }
+
+            @Override
+            public void onProgress(List<PatternLockView.Dot> progressPattern) {
+
+            }
+
+            @Override
+            public void onComplete(List<PatternLockView.Dot> pattern) {
+                String enteredPattern = PasswordGeneration.getSecurePassword(PatternLockUtils.patternToMD5(patternLockView,pattern));
+                if(UsefulFunctions.getUniversalPassword(LockScreenForParental.this).equals(enteredPattern)) {
+                    patternLockView.setViewMode(PatternLockView.PatternViewMode.CORRECT);
+                    entrySuccessful();
+                }
+                else {
+                    patternLockView.setViewMode(PatternLockView.PatternViewMode.WRONG);
+                    patternLockView.clearPattern();
+                }
+            }
+
+            @Override
+            public void onCleared() {
+
+            }
+        });
+    //*******************************Pattern Lock*************************************************************//
     }
 
     //*************************BIO-METRICS******************************************//

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/lockScreen"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/lockScreen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".LockScreen.LockScreen">
@@ -11,39 +11,64 @@
         android:id="@+id/lockAppIcon"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:scaleType="fitCenter"
-        android:layout_centerInParent="true"
         android:layout_above="@+id/lockAppName"
+        android:layout_centerInParent="true"
         android:layout_margin="10dp"
-        android:contentDescription="AppIcon" />
+        android:contentDescription="AppIcon"
+        android:scaleType="fitCenter" />
+
     <TextView
         android:id="@+id/lockAppName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="App Name"
         android:layout_above="@+id/lockInput"
         android:layout_centerInParent="true"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:text="App Name" />
 
     <EditText
         android:id="@+id/lockInput"
-        android:inputType="textPassword"
-        android:imeOptions="actionDone"
-        android:layout_margin="10dp"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_above="@+id/pattern_cardView"
+        android:layout_margin="10dp"
         android:hint="Input Password"
-        android:textAlignment="center"
+        android:imeOptions="actionDone"
+        android:inputType="textPassword"
         android:maxLines="1"
-        android:layout_centerInParent="true"/>
+        android:visibility="visible"
+        android:textAlignment="center" />
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/pattern_cardView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_margin="10dp"
+        app:cardElevation="20dp"
+        android:visibility="visible"
+        app:cardCornerRadius="7dp">
+
+        <com.andrognito.patternlockview.PatternLockView
+            android:id="@+id/pattern_lockView"
+            android:layout_width="250dp"
+            android:layout_height="280dp"
+            app:aspectRatio="square"
+            app:correctStateColor="@color/colorCorrectLine"
+            app:normalStateColor="@color/colorNormalLine"
+            app:wrongStateColor="@color/colorWrongLine"
+            android:background="@color/colorPrimaryDark"/>
+    </android.support.v7.widget.CardView>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_fingerprint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:fabSize="normal"
-        android:layout_marginTop="40dp"
+        android:layout_below="@+id/pattern_cardView"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/lockInput"
-        android:src="@drawable/ic_fingerprint_white_24dp"/>
+        android:layout_marginTop="40dp"
+        android:src="@drawable/ic_fingerprint_white_24dp"
+        app:fabSize="normal" />
 
 </RelativeLayout>

@@ -6,4 +6,7 @@
     <color name="colorWhite">#FFF9F9F9</color>
     <color name="colorBlack">#000</color>
     <color name="colorButton">#7b0014</color>
+    <color name="colorCorrectLine">#0AD42B</color>
+    <color name="colorNormalLine">#FFF9F9F9</color>
+    <color name="colorWrongLine">#a10712</color>
 </resources>

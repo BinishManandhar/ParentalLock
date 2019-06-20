@@ -468,6 +468,11 @@ public class UsefulFunctions {
         return databaseHelper.getFingerprintStatus();
     }
 
+    public static String checkUniversalPasswordType(Context context){
+        DatabaseHelper databaseHelper = new DatabaseHelper(context);
+        return databaseHelper.getUniversalPasswordType();
+    }
+
     @TargetApi(23)
     public static void checkBatteryOptimization(final Context context) {
         String packageName = context.getPackageName();
