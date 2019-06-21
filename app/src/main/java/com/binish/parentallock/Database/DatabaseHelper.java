@@ -186,10 +186,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return type;
     }
 
-    public void setLockUnlockPasswordType(String packageName,String type){
+    public void setLockUnlockPasswordType(String packageName,int type){
         db = this.getWritableDatabase();
+        String passType;
+        if(type==0)
+            passType = GlobalStaticVariables.PASSWORDTYPE_TEXT;
+        else
+            passType = GlobalStaticVariables.PASSWORDTYPE_PATTERN;
         ContentValues cb = new ContentValues();
-        cb.put(LOCK_UNLOCK_PASSWORD_TYPE,type);
+        cb.put(LOCK_UNLOCK_PASSWORD_TYPE,passType);
         db.update(TABLE_LOCK_UNLOCK,cb,LOCK_UNLOCK_NAME+"='"+packageName+"'",null);
         db.close();
     }

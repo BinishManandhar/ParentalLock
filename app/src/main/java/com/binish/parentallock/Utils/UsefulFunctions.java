@@ -473,6 +473,16 @@ public class UsefulFunctions {
         return databaseHelper.getUniversalPasswordType();
     }
 
+    public static String checkIndividualPasswordType(Context context,String packageName){
+        DatabaseHelper databaseHelper = new DatabaseHelper(context);
+        return databaseHelper.getLockUnlockPasswordType(packageName);
+    }
+
+    public static void setIndividualPasswordType(Context context,String packageName,int type){
+        DatabaseHelper databaseHelper = new DatabaseHelper(context);
+        databaseHelper.setLockUnlockPasswordType(packageName,type);
+    }
+
     @TargetApi(23)
     public static void checkBatteryOptimization(final Context context) {
         String packageName = context.getPackageName();

@@ -37,6 +37,7 @@ import com.binish.parentallock.Utils.UsefulFunctions;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.locks.Lock;
 
 public class LockScreen extends AppCompatActivity {
     String packageName;
@@ -99,10 +100,18 @@ public class LockScreen extends AppCompatActivity {
 
         //*******************************Pattern Lock*************************************************************//
         CardView patternCardView = findViewById(R.id.pattern_cardView);
-        if(UsefulFunctions.checkUniversalPasswordType(this).equals(GlobalStaticVariables.PASSWORDTYPE_TEXT))
-            patternCardView.setVisibility(View.INVISIBLE);
-        else
-            lockInput.setVisibility(View.INVISIBLE);
+        if(!UsefulFunctions.getIndividualPassword(this,packageName).equals("")) {
+            if (UsefulFunctions.checkIndividualPasswordType(this, packageName).equals(GlobalStaticVariables.PASSWORDTYPE_TEXT))
+                patternCardView.setVisibility(View.INVISIBLE);
+            else
+                lockInput.setVisibility(View.INVISIBLE);
+        }
+        else {
+            if (UsefulFunctions.checkUniversalPasswordType(this).equals(GlobalStaticVariables.PASSWORDTYPE_TEXT))
+                patternCardView.setVisibility(View.INVISIBLE);
+            else
+                lockInput.setVisibility(View.INVISIBLE);
+        }
 
         final PatternLockView patternLockView = findViewById(R.id.pattern_lockView);
         patternLockView.setTactileFeedbackEnabled(true);
@@ -120,7 +129,8 @@ public class LockScreen extends AppCompatActivity {
             @Override
             public void onComplete(List<PatternLockView.Dot> pattern) {
                 String enteredPattern = PasswordGeneration.getSecurePassword(PatternLockUtils.patternToMD5(patternLockView,pattern));
-                if(UsefulFunctions.getUniversalPassword(LockScreen.this).equals(enteredPattern)) {
+                if(UsefulFunctions.getUniversalPassword(LockScreen.this).equals(enteredPattern)
+                        || UsefulFunctions.getIndividualPassword(LockScreen.this,packageName).equals(PatternLockUtils.patternToMD5(patternLockView,pattern))) {
                     patternLockView.setViewMode(PatternLockView.PatternViewMode.CORRECT);
                     entrySuccessful();
                 }

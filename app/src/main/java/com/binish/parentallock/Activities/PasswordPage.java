@@ -48,6 +48,7 @@ public class PasswordPage extends AppCompatActivity implements OnClickListener {
         FloatingActionButton backButton = findViewById(R.id.password_back);
         FloatingActionButton changeButton = findViewById(R.id.password_change);
         FloatingActionButton patternBackButton = findViewById(R.id.password_pattern_back);
+        patternBackButton.setOnClickListener(this);
         passwordType = findViewById(R.id.password_type_picker);
         newPassword = findViewById(R.id.new_password);
         confirmPassword = findViewById(R.id.confirm_password);
@@ -82,7 +83,6 @@ public class PasswordPage extends AppCompatActivity implements OnClickListener {
         passwordType.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                databaseHelper.setUniversalPasswordType(newVal);
                 if(newVal==1) {
                     passwordText.setVisibility(View.GONE);
                     passwordPattern.setVisibility(View.VISIBLE);
