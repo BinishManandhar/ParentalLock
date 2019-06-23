@@ -50,7 +50,7 @@ public class LockScreenForParental extends AppCompatActivity {
         final EditText lockInput = findViewById(R.id.lockInput);
 
         try{
-            lockAppIcon.setImageResource(R.drawable.ic_launcher_foreground);
+            lockAppIcon.setImageResource(R.mipmap.parental_lock_icon);
         }
         catch (Exception e){
             Log.i("ResourceException",""+e);
