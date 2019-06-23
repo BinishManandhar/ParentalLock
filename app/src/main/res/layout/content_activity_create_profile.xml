@@ -9,58 +9,69 @@
     tools:context=".Activities.ActivityCreateProfile"
     tools:showIn="@layout/activity_create_profile">
 
-    <EditText
-        android:id="@+id/createProfile_Name"
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:drawableStart="@drawable/ic_people_red_24dp"
-        android:drawablePadding="20dp"
-        android:layout_margin="10dp"
-        android:maxLines="1"
-        android:inputType="text"
-        android:hint="Profile Name"/>
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/createProfile_Name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:drawableStart="@drawable/ic_people_red_24dp"
+            android:drawablePadding="20dp"
+            android:hint="Profile Name"
+            android:inputType="text"
+            android:maxLines="1" />
+    </android.support.design.widget.TextInputLayout>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:drawablePadding="20dp"
         android:layout_margin="10dp"
+        android:drawableStart="@drawable/ic_lock_open_green_24dp"
+        android:drawablePadding="20dp"
         android:text="Unlock"
-        android:textSize="20sp"
-        android:drawableStart="@drawable/ic_lock_open_green_24dp"/>
+        android:textSize="20sp" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp">
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:textSize="15sp"
             android:gravity="center"
-            android:text="From:"/>
+            android:text="From:"
+            android:textSize="15sp" />
+
         <Button
             android:id="@+id/unlock_from"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="SET"
-            android:theme="@style/BrandButtonStyle"
-            android:gravity="center"/>
+            android:theme="@style/BrandButtonStyle" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:textSize="15sp"
             android:gravity="center"
-            android:text="To"/>
+            android:text="To"
+            android:textSize="15sp" />
+
         <Button
             android:id="@+id/unlock_to"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="SET"
-            android:theme="@style/BrandButtonStyle"
-            android:gravity="center"/>
+            android:theme="@style/BrandButtonStyle" />
     </LinearLayout>
 
 </LinearLayout>
