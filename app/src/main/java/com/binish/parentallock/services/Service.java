@@ -1,7 +1,6 @@
 package com.binish.parentallock.services;
 
 import android.content.Intent;
-import android.os.Binder;
 import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.util.Log;
@@ -17,14 +16,10 @@ public class Service extends android.app.Service {
     String LOGS = "PackageNames";
     ThreadClass thread;
     TimerTaskService tImerTaskService;
-    ForegroundBinder mBinder;
 
     @Override
     public IBinder onBind(Intent intent) {
-        if (mBinder == null){
-            mBinder = new ForegroundBinder();
-        }
-        return mBinder;
+        return null;
     }
 
     @Override
@@ -60,28 +55,4 @@ public class Service extends android.app.Service {
         super.onDestroy();
     }
 
-    private void interruptingThread(){
-        UsefulFunctions.initiateAlarm(this);
-        new Thread(){
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(60*1000);
-                    thread.interrupt();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
-    }
-
-    public class ForegroundBinder extends Binder
-    {
-        public Service getService()
-        {
-            // Return this instance of ForegroundService
-            // so clients can call public methods
-            return Service.this;
-        }
-    }
 }

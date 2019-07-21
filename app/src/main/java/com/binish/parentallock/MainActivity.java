@@ -263,8 +263,6 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
-
     private void startService(){
         mIntent = new Intent(this, Service.class);
         if (!UsefulFunctions.isMyServiceRunning(this, Service.class)) {

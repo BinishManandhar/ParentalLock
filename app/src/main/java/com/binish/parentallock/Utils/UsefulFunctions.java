@@ -67,7 +67,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 public class UsefulFunctions {
-
     public static int JOB_ID = 11;
 
 
@@ -164,9 +163,9 @@ public class UsefulFunctions {
         try {
             Resources res = pm.getResourcesForApplication(applicationInfo);
             final int[] attrs = new int[]{
-                    /** AppCompat attr */
+                    /* AppCompat attr */
                     res.getIdentifier("colorAccent", "attr", packageName),
-                    /** Framework attr */
+                    /* Framework attr */
                     android.R.attr.colorPrimary
             };
             Resources.Theme theme = res.newTheme();
@@ -183,7 +182,7 @@ public class UsefulFunctions {
     }
 
     private static byte[] drawableToByte(Drawable drawable) {
-        Bitmap bitmap = null;
+        Bitmap bitmap;
 
         if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
             bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
@@ -196,8 +195,7 @@ public class UsefulFunctions {
         drawable.draw(canvas);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-        byte[] b = baos.toByteArray();
-        return b;
+        return baos.toByteArray();
     }
 
     public static boolean isMyServiceRunning(Context context, Class<?> serviceClass) {
@@ -364,7 +362,6 @@ public class UsefulFunctions {
             startJobService(context);
     }
 
-
     public static boolean isJobServiceOn(Context context) {
         JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
@@ -507,7 +504,7 @@ public class UsefulFunctions {
     }
 
     @TargetApi(23)
-    public static void ignoreBatteryOptimizations(Context context) {
+    private static void ignoreBatteryOptimizations(Context context) {
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return;

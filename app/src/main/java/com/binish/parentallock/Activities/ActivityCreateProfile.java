@@ -1,19 +1,16 @@
 package com.binish.parentallock.Activities;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import com.binish.parentallock.Database.DatabaseHelper;
 import com.binish.parentallock.R;
-import com.binish.parentallock.Utils.GlobalStaticVariables;
 import com.binish.parentallock.Utils.UsefulFunctions;
 
 public class ActivityCreateProfile extends AppCompatActivity implements View.OnClickListener {
@@ -36,7 +33,6 @@ public class ActivityCreateProfile extends AppCompatActivity implements View.OnC
         Button toSet = findViewById(R.id.unlock_to);
         FloatingActionButton fab = findViewById(R.id.createProfileFab);
         FloatingActionButton fabCancel = findViewById(R.id.createProfileFabCancel);
-
 
 
         fabCancel.setOnClickListener(this);
